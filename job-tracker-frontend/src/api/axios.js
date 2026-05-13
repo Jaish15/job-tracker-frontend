@@ -1,6 +1,10 @@
 import axios from 'axios';
 
+// Main AWS backend — handles login, register, jobs, all real data
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+// Render backend — only used for forgot password (email sending)
+export const RENDER_API_URL = import.meta.env.VITE_RENDER_API_URL || 'https://job-tracker-backend-ie8b.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
