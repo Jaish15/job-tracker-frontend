@@ -1,0 +1,306 @@
+/* ============================================
+   Sign In & Register — Minimal Light Mode
+   White & pale green, pill inputs, minimal
+   ============================================ */
+
+/* Full-page background */
+.si-page, .lv-page {
+  min-height: 100vh;
+  background-color: #f0f0f0; /* Slight off-white to let card pop */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: var(--font, 'Inter', system-ui, sans-serif);
+}
+
+/* Main Card */
+.si-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+/* ── Left: Form Panel ── */
+.si-left {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+  background: #ffffff;
+}
+
+.si-title, .lv-reg-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.si-subtitle, .lv-reg-sub {
+  font-size: 0.95rem;
+  color: #555555;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+.si-alert, .lv-alert {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.si-form, .lv-reg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Input Fields */
+.si-field, .lv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.si-input, .lv-input {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px; /* Pill shape */
+  font-size: 0.95rem;
+  color: #000000;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.si-input::placeholder, .lv-input::placeholder {
+  color: #9ca3af;
+}
+
+.si-input:focus, .lv-input:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 1px #000000;
+}
+
+/* Password wrapper */
+.si-pw-wrap, .lv-pw-wrap {
+  position: relative;
+}
+
+.si-pw-wrap .si-input, .lv-pw-wrap .lv-input {
+  padding-right: 3.5rem;
+}
+
+.si-eye, .lv-eye-btn {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+.si-eye:hover, .lv-eye-btn:hover { color: #000000; }
+
+.si-forgot-pw {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #555555;
+  text-decoration: none;
+  margin-top: -0.5rem;
+}
+.si-forgot-pw:hover { color: #000000; text-decoration: underline; }
+
+/* Buttons */
+.si-btn-signin, .lv-reg-submit {
+  width: 100%;
+  padding: 1rem;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.si-btn-signin:hover:not(:disabled), .lv-reg-submit:hover:not(:disabled) {
+  background: #333333;
+  transform: translateY(-1px);
+}
+
+.si-btn-signin:disabled, .lv-reg-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.si-spinner, .lv-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: si-spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes si-spin { to { transform: rotate(360deg); } }
+
+/* Social Login Row */
+.si-social-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+.si-social-divider::before, .si-social-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+.si-social-divider:not(:empty)::before { margin-right: .5em; }
+.si-social-divider:not(:empty)::after { margin-left: .5em; }
+
+.si-social-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.si-social-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.si-social-btn:hover { background: #333333; transform: scale(1.05); }
+
+/* Switch to Register/Login */
+.si-reg-switch, .lv-reg-switch {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #555555;
+}
+
+.si-reg-switch a, .lv-reg-switch a {
+  color: #000000;
+  font-weight: 600;
+  text-decoration: none;
+}
+.si-reg-switch a:hover, .lv-reg-switch a:hover { text-decoration: underline; }
+
+/* ── Right: Illustration Panel ── */
+.si-right {
+  flex: 1;
+  background: var(--primary-soft, #f2f7f4);
+  margin: 1rem;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.si-illustration {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.si-promo-text {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #000000;
+  margin-top: 2rem;
+}
+
+/* Meditating character SVG styling */
+.si-char-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.si-float-widget {
+  position: absolute;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: float 4s ease-in-out infinite;
+}
+
+.si-widget-1 { bottom: 10%; left: 0; }
+.si-widget-2 { top: 20%; right: 10%; border-radius: 50%; padding: 0.5rem; animation-delay: 1s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ── Register Specific ── */
+.lv-reg-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 500px;
+  padding: 3.5rem;
+}
+.lv-reg-row { display: flex; gap: 1rem; }
+.lv-reg-row .lv-field { flex: 1; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .si-card { flex-direction: column; max-width: 500px; }
+  .si-left { padding: 3rem; }
+  .si-right { display: none; }
+  .lv-reg-card { padding: 3rem; }
+}
+
+@media (max-width: 500px) {
+  .si-left { padding: 2rem; }
+  .si-title, .lv-reg-title { font-size: 2rem; }
+  .lv-reg-card { padding: 2rem; }
+  .lv-reg-row { flex-direction: column; gap: 1.25rem; }
+}
