@@ -50,7 +50,12 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const { data } = await authApi.resetPassword({ email });
-      return { success: true, previewUrl: data.previewUrl };
+      return {
+        success: true,
+        previewUrl: data.previewUrl || '',
+        resetLink: data.resetLink || '',
+        devMode: data.devMode || false,
+      };
     } catch (err) {
       return {
         success: false,
@@ -60,6 +65,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   };
+
 
   const logout = () => {
     localStorage.removeItem('accessToken');

@@ -7,6 +7,8 @@ export function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [resetLink, setResetLink] = useState(''); // dev mode direct link
+  const [devMode, setDevMode] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
@@ -20,11 +22,14 @@ export function ForgotPassword() {
     if (result.success) {
       setSent(true);
       setPreviewUrl(result.previewUrl || '');
+      setResetLink(result.resetLink || '');
+      setDevMode(result.devMode || false);
       setError('');
     } else {
       setError(result.message || 'Failed to send reset link. Please try again.');
     }
   };
+
 
   return (
     <div className="si-page">
@@ -79,18 +84,50 @@ export function ForgotPassword() {
                 ✉️
               </div>
 
-              <h1 className="si-title">Check your inbox!</h1>
+              <h1 className="si-title">
+                {devMode ? 'Reset Link Ready!' : 'Check your inbox!'}
+              </h1>
               <p className="si-subtitle">
-                We sent a password reset link to <strong>{email}</strong>.
+                {devMode
+                  ? 'No email provider configured — click the link below to reset your password directly.'
+                  : <>We sent a password reset link to <strong>{email}</strong>. Check your inbox (and spam folder).</>
+                }
               </p>
 
+              {/* Dev mode — direct clickable link */}
+              {devMode && resetLink && (
+                <div style={{
+                  marginTop: '1.5rem', padding: '1.25rem', background: '#eff6ff',
+                  border: '1px solid #bfdbfe', borderRadius: '16px'
+                }}>
+                  <p style={{ fontSize: '0.85rem', color: '#1e40af', fontWeight: 600, marginBottom: '0.75rem' }}>
+                    🔗 Click below to reset your password:
+                  </p>
+                  <a
+                    href={resetLink}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                      background: '#3b82f6', color: '#fff', padding: '0.6rem 1.25rem',
+                      borderRadius: '10px', fontWeight: 600, fontSize: '0.875rem',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Reset My Password →
+                  </a>
+                  <p style={{ fontSize: '0.75rem', color: '#3b82f6', marginTop: '0.75rem' }}>
+                    This link expires in 30 minutes.
+                  </p>
+                </div>
+              )}
+
+              {/* Ethereal preview URL (legacy) */}
               {previewUrl && (
                 <div style={{
-                  marginTop: '2rem', padding: '1.25rem', background: '#fffbeb',
+                  marginTop: '1.5rem', padding: '1.25rem', background: '#fffbeb',
                   border: '1px solid #fde68a', borderRadius: '16px'
                 }}>
                   <p style={{ fontSize: '0.85rem', color: '#92400e', fontWeight: 600, marginBottom: '0.75rem' }}>
-                    📬 Development Mode: Your email is available to preview here:
+                    📬 View your email preview here:
                   </p>
                   <a
                     href={previewUrl}
@@ -100,23 +137,17 @@ export function ForgotPassword() {
                       display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                       background: '#f59e0b', color: '#fff', padding: '0.6rem 1.25rem',
                       borderRadius: '10px', fontWeight: 600, fontSize: '0.875rem',
-                      textDecoration: 'none', transition: '0.2s'
+                      textDecoration: 'none'
                     }}
                   >
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                    Open Email Preview
+                    Open Email Preview →
                   </a>
-                  <p style={{ fontSize: '0.75rem', color: '#a16207', marginTop: '0.75rem', margin: '0.75rem 0 0' }}>
-                    This preview link is only available in development. In production, the email will arrive in your real inbox.
-                  </p>
                 </div>
               )}
 
               <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => { setSent(false); setEmail(''); setPreviewUrl(''); }}
+                  onClick={() => { setSent(false); setEmail(''); setPreviewUrl(''); setResetLink(''); setDevMode(false); }}
                   style={{
                     background: 'none', border: '1px solid #e5e5e5', color: '#555',
                     padding: '0.6rem 1.25rem', borderRadius: '10px', fontWeight: 600,
@@ -130,6 +161,7 @@ export function ForgotPassword() {
                 </Link>
               </div>
             </div>
+
           )}
         </div>
 
