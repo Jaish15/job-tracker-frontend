@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // Main AWS backend — handles login, register, jobs, all real data
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// Fallback is the actual AWS URL so it works even if VITE_API_URL env var is not set in Vercel
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://7ypxb5sc33.execute-api.us-east-1.amazonaws.com/api';
+
 
 // Render backend — only used for forgot password (email sending)
 export const RENDER_API_URL = import.meta.env.VITE_RENDER_API_URL || 'https://job-tracker-backend-ie8b.onrender.com/api';
