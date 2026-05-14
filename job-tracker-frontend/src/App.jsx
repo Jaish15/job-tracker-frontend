@@ -14,6 +14,7 @@ import { Profile } from './pages/Profile';
 import { AdminPanel } from './pages/AdminPanel';
 import { ResumePage } from './pages/ResumePage';
 import { ForgotPassword } from './pages/ForgotPassword';
+import { ResetPassword } from './pages/ResetPassword';
 import { Settings } from './pages/Settings';
 
 function AppLayout({ children }) {
@@ -40,6 +41,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
 
           {/* Protected */}
           <Route element={<ProtectedRoute />}>
