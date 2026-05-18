@@ -200,6 +200,20 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* ══════════ QUICK ACTIONS ══════════ */}
+      <div className="dash2-card dash2-quick-bar">
+        <div className="dash2-card-header" style={{ marginBottom: '0.875rem' }}>
+          <h2 className="dash2-card-title" style={{ fontSize: '0.92rem' }}>Quick Actions</h2>
+        </div>
+        <div className="dash2-quick-actions">
+          <Link to="/jobs/new" className="dash2-qa-btn">➕ Add Job</Link>
+          <Link to="/jobs"     className="dash2-qa-btn">📋 All Jobs</Link>
+          <Link to="/resume"   className="dash2-qa-btn">📄 Resume</Link>
+          <Link to="/profile"  className="dash2-qa-btn">👤 Profile</Link>
+          <Link to="/settings" className="dash2-qa-btn">⚙️ Settings</Link>
+        </div>
+      </div>
+
       {/* ════════════ STAT CARDS ════════════ */}
       <div className="dash2-stats-grid">
         <StatCard icon="📋" value={total} label="Total" color="#6366f1" bg="#f5f3ff" />
@@ -335,13 +349,26 @@ export function Dashboard() {
             <div className="dash2-tips-list">
               <div className="dash2-tip-item">
                 <div className="dash2-tip-icon" style={{ background: '#e0f2fe', color: '#0284c7' }}>💡</div>
-                <div className="dash2-tip-text">Always tailor your resume for each specific role using keywords from the job description.</div>
+                <div className="dash2-tip-text">Tailor your resume for each role using keywords from the job description.</div>
               </div>
               <div className="dash2-tip-item">
                 <div className="dash2-tip-icon" style={{ background: '#fce7f3', color: '#db2777' }}>💬</div>
                 <div className="dash2-tip-text">Follow up 1 week after applying to show genuine interest and initiative.</div>
               </div>
+              <div className="dash2-tip-item">
+                <div className="dash2-tip-icon" style={{ background: '#d1fae5', color: '#059669' }}>🤝</div>
+                <div className="dash2-tip-text">Network on LinkedIn — 70% of jobs are filled through connections.</div>
+              </div>
             </div>
+          </div>
+
+          {/* Motivational Quote */}
+          <div className="dash2-card dash2-quote-card">
+            <div style={{ fontSize: '1.4rem', marginBottom: '0.6rem' }}>💬</div>
+            <p className="dash2-quote-text">
+              &ldquo;The secret of getting ahead is getting started.&rdquo;
+            </p>
+            <p className="dash2-quote-author">— Mark Twain</p>
           </div>
 
         </div>

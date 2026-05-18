@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme, ACCENT_COLORS } from '../context/ThemeContext';
 
 export function Settings() {
   const { user } = useAuth();
+  const { darkMode, setDarkMode, accentKey, setAccentKey } = useTheme();
   const [activeTab, setActiveTab] = useState('general');
 
-  // Mock settings state
+  // Local-only settings (notifications, language, etc.)
   const [settings, setSettings] = useState({
     emailAlerts: true,
     pushAlerts: false,
-    darkMode: false,
     language: 'English (US)',
     timezone: 'UTC -08:00 Pacific Time',
     visibility: 'public',
@@ -86,17 +87,33 @@ export function Settings() {
                 icon="🌙"
                 title="Dark Mode" 
                 desc="Switch the application to a darker color scheme."
-                checked={settings.darkMode}
-                onChange={() => toggleSetting('darkMode')}
+                checked={darkMode}
+                onChange={() => setDarkMode(prev => !prev)}
               />
               
               <div style={{ marginTop: '2.5rem' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Accent Color</h3>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  {['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'].map(color => (
-                    <div key={color} style={{ width: '32px', height: '32px', borderRadius: '50%', background: color, cursor: 'pointer', border: color === '#6366f1' ? '2px solid #111' : 'none', padding: color === '#6366f1' ? '2px' : '0', backgroundClip: 'content-box' }} />
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  {Object.entries(ACCENT_COLORS).map(([key, color]) => (
+                    <button
+                      key={key}
+                      onClick={() => setAccentKey(key)}
+                      title={color.label}
+                      style={{
+                        width: '36px', height: '36px', borderRadius: '50%',
+                        background: color.hex, cursor: 'pointer',
+                        border: accentKey === key ? '3px solid #111' : '2px solid transparent',
+                        outline: accentKey === key ? `2px solid ${color.hex}` : 'none',
+                        outlineOffset: '2px',
+                        transition: 'all 0.15s',
+                        transform: accentKey === key ? 'scale(1.15)' : 'scale(1)',
+                      }}
+                    />
                   ))}
                 </div>
+                <p style={{ marginTop: '0.6rem', fontSize: '0.78rem', color: '#888' }}>
+                  Selected: <strong>{ACCENT_COLORS[accentKey]?.label}</strong>
+                </p>
               </div>
             </div>
           )}
