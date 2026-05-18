@@ -94,7 +94,7 @@ export function Settings() {
               <div style={{ marginTop: '2.5rem' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text)' }}>Accent Color</h3>
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  {Object.entries(ACCENT_COLORS).map(([key, color]) => (
+                  {ACCENT_COLORS && Object.entries(ACCENT_COLORS).map(([key, color]) => (
                     <button
                       key={key}
                       onClick={() => setAccentKey(key)}
@@ -112,7 +112,7 @@ export function Settings() {
                   ))}
                 </div>
                 <p style={{ marginTop: '0.6rem', fontSize: '0.78rem', color: 'var(--text-3)' }}>
-                  Selected: <strong style={{ color: 'var(--text-2)' }}>{ACCENT_COLORS[accentKey]?.label}</strong>
+                  Selected: <strong style={{ color: 'var(--text-2)' }}>{ACCENT_COLORS && ACCENT_COLORS[accentKey]?.label}</strong>
                 </p>
               </div>
             </div>
