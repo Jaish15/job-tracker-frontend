@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Sidebar } from './components/Sidebar';
 import { Topbar } from './components/Topbar';
 import { Chatbot } from './components/Chatbot';
+import { ParticleTrail } from './components/ParticleTrail';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
@@ -36,6 +37,7 @@ function AppLayout({ children }) {
 function App() {
   return (
     <ThemeProvider>
+      <ParticleTrail />
     <BrowserRouter>
       <AuthProvider>
         <Routes>
