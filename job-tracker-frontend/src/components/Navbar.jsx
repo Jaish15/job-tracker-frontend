@@ -1,11 +1,9 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import { useState } from 'react';
 
 export function Navbar() {
   const { user, logout, isAdmin } = useAuth();
-  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,12 +18,9 @@ export function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/dashboard" className="brand-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-          <img 
-            src={darkMode ? '/logo-dark.png' : '/logo-light.png'} 
-            alt="JobTracker Logo" 
-            style={{ height: '36px', objectFit: 'contain' }} 
-          />
+        <Link to="/dashboard" className="brand-link">
+          <span className="brand-icon">💼</span>
+          <span className="brand-text">JobTracker</span>
         </Link>
       </div>
 
