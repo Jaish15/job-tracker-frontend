@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { jobsApi } from '../api/jobs';
@@ -22,6 +22,62 @@ export function Dashboard() {
   const [stats, setStats] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  /* ── Profile Picture Uploader ── */
+  const [profilePic, setProfilePic] = useState(() => localStorage.getItem('userProfilePic') || null);
+  const fileInputRef = useRef(null);
+
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        localStorage.setItem('userProfilePic', base64String);
+        setProfilePic(base64String);
+        window.dispatchEvent(new Event('profilePicUpdated'));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  /* ── Smart To-Do Checklist State ── */
+  const [todos, setTodos] = useState(() => {
+    const saved = localStorage.getItem('jobtracker_todos');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, text: "Tailor resume keywords for recently tracked applications", completed: false },
+      { id: 2, text: "Connect with 2 recruiters at target companies on LinkedIn", completed: false },
+      { id: 3, text: "Review technical prep question tags for scheduled interviews", completed: false }
+    ];
+  });
+  const [newTodoText, setNewTodoText] = useState('');
+
+  const saveTodos = (newTodos) => {
+    setTodos(newTodos);
+    localStorage.setItem('jobtracker_todos', JSON.stringify(newTodos));
+  };
+
+  const handleAddTodo = (e) => {
+    e.preventDefault();
+    if (!newTodoText.trim()) return;
+    const newTodo = {
+      id: Date.now(),
+      text: newTodoText.trim(),
+      completed: false
+    };
+    saveTodos([...todos, newTodo]);
+    setNewTodoText('');
+  };
+
+  const handleToggleTodo = (id) => {
+    const updated = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+    saveTodos(updated);
+  };
+
+  const handleDeleteTodo = (id) => {
+    const updated = todos.filter(t => t.id !== id);
+    saveTodos(updated);
+  };
 
   /* ── Interactive Calendar State ── */
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -264,6 +320,139 @@ export function Dashboard() {
             </div>
           </div>
 
+          {/* ---- Smart Daily Goals Checklist ---- */}
+          <div className="db-card" style={{ marginTop: '0rem' }}>
+            <div className="db-card-header" style={{ marginBottom: '1rem' }}>
+              <div>
+                <h2 className="db-card-title">Daily Goals Checklist</h2>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 600, marginTop: '0.15rem' }}>
+                  Keep your job-hunting tasks fully organized
+                </div>
+              </div>
+              <span style={{ 
+                fontSize: '0.75rem', 
+                fontWeight: 700, 
+                color: '#5c5fc0', 
+                background: '#eef2ff', 
+                padding: '0.2rem 0.6rem', 
+                borderRadius: '6px' 
+              }}>
+                {todos.filter(t => t.completed).length} / {todos.length} Done
+              </span>
+            </div>
+
+            {/* Todo Input Form */}
+            <form onSubmit={handleAddTodo} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+              <input 
+                type="text" 
+                placeholder="Add a new task (e.g. Follow up with recruiting team)..."
+                value={newTodoText}
+                onChange={(e) => setNewTodoText(e.target.value)}
+                style={{ 
+                  flex: 1,
+                  padding: '0.5rem 1rem',
+                  border: '1.5px solid var(--border)',
+                  borderRadius: '12px',
+                  fontSize: '0.85rem',
+                  outline: 'none',
+                  background: 'var(--surface-2)',
+                  color: 'var(--text)',
+                  transition: 'border-color 0.2s ease'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#5c5fc0'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+              />
+              <button 
+                type="submit" 
+                style={{ 
+                  background: '#5c5fc0',
+                  color: '#ffffff',
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '12px',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#4a4d9e'}
+                onMouseLeave={(e) => e.target.style.background = '#5c5fc0'}
+              >
+                Add
+              </button>
+            </form>
+
+            {/* Todo List */}
+            {todos.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '1.5rem', fontSize: '0.8rem', color: 'var(--text-3)', fontStyle: 'italic' }}>
+                All clear! Add a task above to plan your day. 🌟
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {todos.map(todo => (
+                  <div 
+                    key={todo.id} 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'space-between',
+                      padding: '0.75rem 1rem',
+                      background: todo.completed ? 'rgba(92, 95, 192, 0.03)' : 'var(--surface-2)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '12px',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', flex: 1, minWidth: 0 }}>
+                      <input 
+                        type="checkbox" 
+                        checked={todo.completed}
+                        onChange={() => handleToggleTodo(todo.id)}
+                        style={{ 
+                          width: '18px', 
+                          height: '18px', 
+                          borderRadius: '6px', 
+                          border: '1.5px solid var(--border)', 
+                          accentColor: '#5c5fc0',
+                          cursor: 'pointer' 
+                        }}
+                      />
+                      <span style={{ 
+                        fontSize: '0.85rem', 
+                        color: todo.completed ? 'var(--text-3)' : 'var(--text-2)',
+                        textDecoration: todo.completed ? 'line-through' : 'none',
+                        fontWeight: todo.completed ? 500 : 600,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        textAlign: 'left'
+                      }}>
+                        {todo.text}
+                      </span>
+                    </label>
+                    <button 
+                      type="button"
+                      onClick={() => handleDeleteTodo(todo.id)}
+                      style={{ 
+                        color: 'var(--text-3)',
+                        fontSize: '1rem',
+                        cursor: 'pointer',
+                        padding: '0.15rem 0.35rem',
+                        borderRadius: '4px',
+                        transition: 'color 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => e.target.style.color = '#dc2626'}
+                      onMouseLeave={(e) => e.target.style.color = 'var(--text-3)'}
+                      aria-label="Delete Task"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* ════════════ RIGHT COLUMN ════════════ */}
@@ -456,25 +645,78 @@ export function Dashboard() {
           {/* ---- User Profile Card ---- */}
           <div className="db-profile-card" style={{ padding: '0 0 2rem 0', overflow: 'hidden' }}>
             
-            {/* Spotlight Designer Banner Header */}
-            <div style={{ position: 'relative', height: '140px', width: '100%', marginBottom: '2.5rem' }}>
-              <img 
-                src="/spotlight-designer.jpg" 
-                alt="Spotlight Designer Banner" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            {/* Tech Indigo Cover Banner (Yellow Image Removed as Requested) */}
+            <div style={{ 
+              position: 'relative', 
+              height: '120px', 
+              width: '100%', 
+              marginBottom: '2.5rem',
+              background: 'linear-gradient(135deg, #5c5fc0 0%, #4f46e5 100%)',
+              boxShadow: 'inset 0 -15px 30px rgba(0,0,0,0.1)'
+            }}>
+              {/* Invisible File Input */}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                accept="image/*" 
+                onChange={handleProfilePicChange} 
+                style={{ display: 'none' }} 
               />
-              <div className="db-profile-avatar" style={{ 
-                position: 'absolute', 
-                bottom: '-25px', 
-                left: '50%', 
-                transform: 'translateX(-50%)',
-                width: '66px',
-                height: '66px',
-                fontSize: '1.3rem',
-                border: '4px solid #ffffff',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-              }}>
-                {userInitials}
+              
+              {/* Interactive Avatar Circle with Camera Hover Uploader */}
+              <div 
+                className="db-profile-avatar" 
+                onClick={() => fileInputRef.current.click()}
+                style={{ 
+                  position: 'absolute', 
+                  bottom: '-25px', 
+                  left: '50%', 
+                  transform: 'translateX(-50%)',
+                  width: '66px',
+                  height: '66px',
+                  fontSize: '1.3rem',
+                  border: '4px solid #ffffff',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Click to upload profile picture"
+                onMouseEnter={(e) => {
+                  const overlay = e.currentTarget.querySelector('.avatar-camera-overlay');
+                  if (overlay) overlay.style.opacity = '1';
+                }}
+                onMouseLeave={(e) => {
+                  const overlay = e.currentTarget.querySelector('.avatar-camera-overlay');
+                  if (overlay) overlay.style.opacity = '0';
+                }}
+              >
+                {profilePic ? (
+                  <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  userInitials
+                )}
+                {/* Camera Overlay */}
+                <div 
+                  className="avatar-camera-overlay"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1rem',
+                    opacity: 0,
+                    transition: 'opacity 0.2s ease',
+                    borderRadius: '50%'
+                  }}
+                >
+                  📷
+                </div>
               </div>
             </div>
 

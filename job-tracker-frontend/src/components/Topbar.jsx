@@ -1,15 +1,26 @@
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Topbar({ onToggleSidebar }) {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
+  const [profilePic, setProfilePic] = useState(() => localStorage.getItem('userProfilePic') || null);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setProfilePic(localStorage.getItem('userProfilePic'));
+    };
+    window.addEventListener('profilePicUpdated', handleUpdate);
+    return () => window.removeEventListener('profilePicUpdated', handleUpdate);
+  }, []);
 
   const today = new Date().toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
+
+  const userInitials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`;
 
   return (
     <header className="topbar">
@@ -55,8 +66,12 @@ export function Topbar({ onToggleSidebar }) {
         {/* Notifications and Messages removed in favor of Dashboard Chatbot */}
 
         <div className="topbar-user">
-          <div className="topbar-avatar">
-            {user?.firstName?.[0]}{user?.lastName?.[0]}
+          <div className="topbar-avatar" style={{ padding: 0, overflow: 'hidden' }}>
+            {profilePic ? (
+              <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              userInitials
+            )}
           </div>
           <div className="topbar-user-info">
             <span className="topbar-user-name">{user?.firstName} {user?.lastName}</span>
