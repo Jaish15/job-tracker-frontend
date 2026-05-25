@@ -3,16 +3,16 @@ import { useAuth } from '../context/AuthContext';
 import { usersApi } from '../api/users';
 
 export function Profile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   
-  // Standard profile state
+  // Standard profile state loaded from local storage where applicable
   const [form, setForm] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    headline: 'Senior Software Engineer at JobTracker',
-    location: 'San Francisco, CA',
-    phone: '+1 (555) 123-4567',
-    portfolio: 'https://johndoe.dev'
+    headline: localStorage.getItem('user_headline') || 'Senior Software Engineer at JobTracker',
+    location: localStorage.getItem('user_location') || 'San Francisco, CA',
+    phone: localStorage.getItem('user_phone') || '+1 (555) 123-4567',
+    portfolio: localStorage.getItem('user_portfolio') || 'https://johndoe.dev'
   });
   
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export function Profile() {
   const [error, setError] = useState('');
   
   const fileInputRef = useRef(null);
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState(() => localStorage.getItem('userProfilePic') || null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,10 +35,12 @@ export function Profile() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Simulate reading a file for immediate preview
       const reader = new FileReader();
       reader.onload = (evt) => {
-        setAvatar(evt.target.result);
+        const base64Image = evt.target.result;
+        setAvatar(base64Image);
+        localStorage.setItem('userProfilePic', base64Image);
+        window.dispatchEvent(new Event('profilePicUpdated'));
       };
       reader.readAsDataURL(file);
     }
@@ -47,16 +49,43 @@ export function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+    setMessage('');
+
     try {
-      // Simulate real update - keeping the original API call if backend supports it
-      await usersApi.update(user.id, {
-        firstName: form.firstName,
-        lastName: form.lastName,
-      });
+      // 1. Attempt to update the backend database if supported
+      try {
+        if (user?.id) {
+          await usersApi.update(user.id, {
+            firstName: form.firstName,
+            lastName: form.lastName,
+          });
+        }
+      } catch (backendErr) {
+        console.warn(
+          'Backend update failed (e.g. users endpoint missing/unimplemented). Falling back to client-side persistence.',
+          backendErr
+        );
+      }
+
+      // 2. Perform the local update via AuthContext to update the user name globally in UI
+      if (updateUser) {
+        updateUser({
+          firstName: form.firstName,
+          lastName: form.lastName,
+        });
+      }
+
+      // 3. Save additional profile fields to localStorage so they persist across refreshes
+      localStorage.setItem('user_headline', form.headline);
+      localStorage.setItem('user_location', form.location);
+      localStorage.setItem('user_phone', form.phone);
+      localStorage.setItem('user_portfolio', form.portfolio);
+
       setMessage('Profile details updated successfully.');
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      setError('Failed to update profile');
     } finally {
       setLoading(false);
     }

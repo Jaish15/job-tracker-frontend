@@ -101,6 +101,12 @@ export function AuthProvider({ children }) {
   };
 
 
+  const updateUser = (updatedFields) => {
+    const updatedUser = { ...user, ...updatedFields };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
@@ -111,7 +117,7 @@ export function AuthProvider({ children }) {
   const isRecruiter = () => user?.role === 'recruiter';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, resetPassword, isAdmin, isRecruiter }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, resetPassword, isAdmin, isRecruiter, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
