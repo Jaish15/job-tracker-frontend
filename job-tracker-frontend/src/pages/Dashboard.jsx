@@ -111,8 +111,8 @@ export function Dashboard() {
     );
   }
 
-  // Derived stats
-  const activeCount = stats?.active || 0;
+  // Derived stats - calculated directly from jobs for absolute accuracy & backend independence
+  const activeCount = jobs.filter(job => !['rejected', 'withdrawn'].includes(job.status)).length;
   const offersCount = stats?.byStatus?.offer || 0;
   const recentJobs = jobs.slice(0, 4); // Show top 4 like reference
 
