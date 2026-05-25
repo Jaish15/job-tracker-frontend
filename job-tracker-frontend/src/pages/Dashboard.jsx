@@ -1,104 +1,33 @@
-import { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { jobsApi } from '../api/jobs';
 import '../styles/dashboard.css';
 
-/* ── Status config ─────────────────────────────────────────── */
-const STATUS_CONFIG = {
-  wishlist:     { label: 'Wishlist',      icon: '⭐', color: '#7c3aed', bg: '#ede9fe' },
-  applied:      { label: 'Applied',       icon: '📤', color: '#1d4ed8', bg: '#dbeafe' },
-  phone_screen: { label: 'Phone Screen',  icon: '📞', color: '#d97706', bg: '#fef3c7' },
-  interview:    { label: 'Interview',     icon: '🎯', color: '#0891b2', bg: '#e0f2fe' },
-  offer:        { label: 'Offer',         icon: '🎉', color: '#059669', bg: '#d1fae5' },
-  accepted:     { label: 'Accepted',      icon: '✅', color: '#059669', bg: '#bbf7d0' },
-  rejected:     { label: 'Rejected',      icon: '❌', color: '#dc2626', bg: '#fee2e2' },
-  withdrawn:    { label: 'Withdrawn',     icon: '⏹️', color: '#4b5563', bg: '#f3f4f6' },
+/* ── Status badge color config ─────────────────────────────── */
+const STATUS_BADGES = {
+  wishlist:     { label: 'Wishlist',      color: '#7c3aed', bg: '#ede9fe', dot: '#7c3aed' },
+  applied:      { label: 'Applied',       color: '#1d4ed8', bg: '#dbeafe', dot: '#1d4ed8' },
+  phone_screen: { label: 'Phone Screen',  color: '#d97706', bg: '#fef3c7', dot: '#d97706' },
+  interview:    { label: 'Interview',     color: '#0891b2', bg: '#e0f2fe', dot: '#0891b2' },
+  offer:        { label: 'Offer',         color: '#059669', bg: '#d1fae5', dot: '#059669' },
+  accepted:     { label: 'Accepted',      color: '#10b981', bg: '#bbf7d0', dot: '#10b981' },
+  rejected:     { label: 'Rejected',      color: '#dc2626', bg: '#fee2e2', dot: '#dc2626' },
+  withdrawn:    { label: 'Withdrawn',     color: '#4b5563', bg: '#f3f4f6', dot: '#4b5563' },
 };
-
-/* ── Hooks ─────────────────────────────────────────────────── */
-function useCountUp(end, duration = 1500) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      // easeOutQuart
-      const ease = 1 - Math.pow(1 - progress, 4);
-      setCount(Math.floor(ease * end));
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      }
-    };
-    window.requestAnimationFrame(step);
-  }, [end, duration]);
-
-  return count;
-}
-
-/* ── Components ────────────────────────────────────────────── */
-function ProgressRing({ value, max, size = 120, stroke = 8, color = '#6366f1' }) {
-  const radius = (size - stroke) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const pct = max === 0 ? 0 : value / max;
-  const strokeDashoffset = circumference - pct * circumference;
-
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
-      <circle
-        cx={size/2} cy={size/2} r={radius}
-        fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={stroke}
-      />
-      <circle
-        cx={size/2} cy={size/2} r={radius}
-        fill="none" stroke={color} strokeWidth={stroke}
-        strokeDasharray={circumference}
-        strokeDashoffset={strokeDashoffset}
-        strokeLinecap="round"
-        style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1)' }}
-      />
-    </svg>
-  );
-}
-
-function StatCard({ icon, value, label, color, bg }) {
-  const count = useCountUp(value);
-  return (
-    <div className="dash2-stat-card" style={{ '--sc': color, '--sc-bg': bg }}>
-      <div className="dash2-stat-icon" style={{ color }}>{icon}</div>
-      <div className="dash2-stat-body">
-        <div className="dash2-stat-value">{count}</div>
-        <div className="dash2-stat-label">{label}</div>
-      </div>
-      <div className="dash2-stat-ring">
-        <ProgressRing value={value} max={value * 1.5 || 10} size={40} stroke={4} color={color} />
-      </div>
-    </div>
-  );
-}
 
 export function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
-  const [recentJobs, setRecentJobs] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Mouse parallax for hero blobs
-  const heroRef = useRef(null);
-  useEffect(() => {
-    const handleMove = (e) => {
-      if (!heroRef.current) return;
-      const { left, top, width, height } = heroRef.current.getBoundingClientRect();
-      const x = (e.clientX - left) / width - 0.5;
-      const y = (e.clientY - top) / height - 0.5;
-      heroRef.current.style.setProperty('--px', `${x * 40}px`);
-      heroRef.current.style.setProperty('--py', `${y * 40}px`);
-    };
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
+  /* ── Interactive Calendar State ── */
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -108,9 +37,9 @@ export function Dashboard() {
           jobsApi.getAll()
         ]);
         setStats(statsRes.data);
-        setRecentJobs(jobsRes.data.slice(0, 5));
+        setJobs(jobsRes.data);
       } catch (err) {
-        console.error('Dashboard error:', err);
+        console.error('Dashboard loading error:', err);
       } finally {
         setLoading(false);
       }
@@ -119,262 +48,390 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="page-loading">
-        <div className="spinner"></div>
+      <div className="page-loading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #e5e7ef', borderTopColor: '#5c5fc0', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
-  const total    = stats?.total || 0;
-  const byStatus = stats?.byStatus || {};
-  const active   = (byStatus.applied || 0) + (byStatus.phone_screen || 0) + (byStatus.interview || 0);
-  const offers   = (byStatus.offer || 0) + (byStatus.accepted || 0);
-  const rejected = byStatus.rejected || 0;
+  // Derived stats
+  const activeCount = stats?.active || 0;
+  const offersCount = stats?.byStatus?.offer || 0;
+  const recentJobs = jobs.slice(0, 4); // Show top 4 like reference
 
-  const successRate = total > 0 ? Math.round((offers / total) * 100) : 0;
+  /* ── Calendar Helper Logic ── */
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
 
-  // Generate today's date formatted
-  const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = new Date(year, month, 1).getDay();
 
-  // Funnel logic
-  const funnelStages = [
-    { key: 'wishlist',     label: 'Wishlist',     count: byStatus.wishlist || 0 },
-    { key: 'applied',      label: 'Applied',      count: byStatus.applied || 0 },
-    { key: 'phone_screen', label: 'Phone Screen', count: byStatus.phone_screen || 0 },
-    { key: 'interview',    label: 'Interview',    count: byStatus.interview || 0 },
-    { key: 'offer',        label: 'Offer',        count: byStatus.offer || 0 },
+  const prevMonth = () => {
+    setCurrentMonth(new Date(year, month - 1, 1));
+  };
+
+  const nextMonth = () => {
+    setCurrentMonth(new Date(year, month + 1, 1));
+  };
+
+  // Helper to format Date objects as key strings (YYYY-MM-DD)
+  const formatDateKey = (y, m, d) => {
+    const mm = String(m + 1).padStart(2, '0');
+    const dd = String(d).padStart(2, '0');
+    return `${y}-${mm}-${dd}`;
+  };
+
+  // Get job events for a particular day
+  const getEventsForDay = (y, m, d) => {
+    const dateStr = formatDateKey(y, m, d);
+    const dayEvents = [];
+
+    jobs.forEach(job => {
+      // Helper check function
+      const matchesDate = (fieldDate) => {
+        if (!fieldDate) return false;
+        return fieldDate.startsWith(dateStr);
+      };
+
+      if (matchesDate(job.appliedDate)) {
+        dayEvents.push({ type: 'applied', label: `📤 Applied to ${job.company}`, job });
+      }
+      if (matchesDate(job.interviewDate)) {
+        dayEvents.push({ type: 'interview', label: `🎯 Interview with ${job.company}`, job });
+      }
+      if (matchesDate(job.offerDate)) {
+        dayEvents.push({ type: 'offer', label: `🎉 Received Offer from ${job.company}!`, job });
+      }
+    });
+
+    return dayEvents;
+  };
+
+  // Currently selected date key
+  const selectedDateKey = formatDateKey(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate()
+  );
+
+  const selectedDayEvents = getEventsForDay(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate()
+  );
+
+  // Month Names array
+  const MONTH_NAMES = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
-  const maxFunnel = Math.max(...funnelStages.map(s => s.count), 1);
 
-  // Time based greeting
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  // User Initials
+  const userInitials = `${user?.firstName?.[0] || 'U'}${user?.lastName?.[0] || ''}`;
 
   return (
     <div className="dash2-page">
-      
-      {/* ════════════ HERO ROW ════════════ */}
-      <div className="dash2-hero" ref={heroRef}>
-        <div className="dash2-hero-blob dash2-blob1"></div>
-        <div className="dash2-hero-blob dash2-blob2"></div>
-        <div className="dash2-hero-blob dash2-blob3"></div>
-
-        <div className="dash2-hero-content">
+      <div className="db-grid">
+        
+        {/* ════════════ LEFT COLUMN ════════════ */}
+        <div className="db-left-col">
           
-          {/* left text area */}
-          <div className="dash2-hero-left">
-            <div className="dash2-eyebrow">
-              <span className="dash2-eyebrow-dot"></span> {todayStr}
-            </div>
-            <h1 className="dash2-hero-title">
-              {greeting},<br />
-              <span className="dash2-name-gradient">{user?.firstName || 'User'}</span> 👋
-            </h1>
-            <p className="dash2-hero-sub">
-              You have <strong>{active}</strong> active applications in progress.
-            </p>
-            
-            <div className="dash2-hero-actions">
-              <Link to="/jobs/new" className="dash2-cta-primary">
-                + Add Application
-              </Link>
-              <Link to="/jobs" className="dash2-cta-secondary">
-                Browse Live Jobs →
-              </Link>
-            </div>
-          </div>
-
-          {/* success rate ring */}
-          <div className="dash2-hero-right">
-            <div className="dash2-success-ring-wrap">
-              <div className="dash2-success-ring-inner">
-                <ProgressRing value={successRate} max={100} color="#10b981" size={140} stroke={10} />
-                <div className="dash2-success-ring-label">
-                  <span className="dash2-ring-pct">{successRate}%</span>
-                  <span className="dash2-ring-sub">Success Rate</span>
-                </div>
+          {/* ---- Hero Banner Card ---- */}
+          <div className="db-hero">
+            <div className="db-hero-content">
+              <div className="db-hero-left">
+                <h1 className="db-hero-title">Hello {user?.firstName || 'User'}!</h1>
+                <p className="db-hero-sub">
+                  Today you have <strong>{activeCount}</strong> active applications in progress.
+                  {offersCount > 0 && ` You also have ${offersCount} job offer pending review!`} 
+                  {' '}Keep updating your progress to land your dream role.
+                </p>
+                <Link to="/jobs/new" className="db-hero-btn">
+                  Add Application
+                </Link>
               </div>
-              <p className="dash2-ring-caption">Offers ÷ Total Applications</p>
+
+              {/* TwitHR laptop/workers vector representation */}
+              <div className="db-hero-right">
+                <svg className="hero-vector-svg" viewBox="0 0 200 200" fill="none">
+                  {/* Desk background layer */}
+                  <rect x="20" y="145" width="160" height="6" rx="3" fill="#ffffff" fillOpacity="0.25"/>
+                  {/* Laptop base */}
+                  <rect x="68" y="90" width="64" height="42" rx="4" fill="#ffffff" fillOpacity="0.95"/>
+                  <rect x="73" y="95" width="54" height="32" rx="2" fill="#5c5fc0"/>
+                  <polygon points="56,132 144,132 134,142 66,142" fill="#ffffff" fillOpacity="0.8"/>
+                  
+                  {/* Desk Mug */}
+                  <rect x="150" y="115" width="14" height="20" rx="3" fill="#ffffff" fillOpacity="0.6"/>
+                  <path d="M162 120 C166 120 166 130 162 130" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.6"/>
+                  
+                  {/* Floating symbols */}
+                  <circle cx="150" cy="40" r="5" fill="#ffb703"/>
+                  <circle cx="45" cy="50" r="7" fill="#ffffff" fillOpacity="0.25"/>
+                  <path d="M100 35 L108 43 L92 43 Z" fill="#ffb703" opacity="0.8"/>
+
+                  {/* Worker Sitting Left (Mary style) */}
+                  <circle cx="52" cy="72" r="10" fill="#ffd166"/>
+                  <path d="M36 112 C36 88 68 88 68 112 L64 135 L40 135 Z" fill="#ffffff" fillOpacity="0.9"/>
+                  <path d="M48 94 L66 108" stroke="#ffffff" strokeWidth="4" strokeLinecap="round"/>
+                  
+                  {/* Worker Standing Right (Smith style) */}
+                  <circle cx="142" cy="65" r="10" fill="#ffd166"/>
+                  <path d="M126 105 C126 80 158 80 158 105 L154 140 L130 140 Z" fill="#ffb703"/>
+                  <path d="M136 88 L116 102" stroke="#ffb703" strokeWidth="4" strokeLinecap="round"/>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* ══════════ QUICK ACTIONS ══════════ */}
-      <div className="dash2-card dash2-quick-bar">
-        <div className="dash2-card-header" style={{ marginBottom: '0.875rem' }}>
-          <h2 className="dash2-card-title" style={{ fontSize: '0.92rem' }}>Quick Actions</h2>
-        </div>
-        <div className="dash2-quick-actions">
-          <Link to="/jobs/new" className="dash2-qa-btn">➕ Add Job</Link>
-          <Link to="/jobs"     className="dash2-qa-btn">📋 All Jobs</Link>
-          <Link to="/resume"   className="dash2-qa-btn">📄 Resume</Link>
-          <Link to="/profile"  className="dash2-qa-btn">👤 Profile</Link>
-          <Link to="/settings" className="dash2-qa-btn">⚙️ Settings</Link>
-        </div>
-      </div>
-
-      {/* ════════════ STAT CARDS ════════════ */}
-      <div className="dash2-stats-grid">
-        <StatCard icon="📋" value={total} label="Total" color="#6366f1" bg="#f5f3ff" />
-        <StatCard icon="⚡" value={active} label="Active" color="#f59e0b" bg="#fffbeb" />
-        <StatCard icon="🎉" value={offers} label="Offers" color="#10b981" bg="#ecfdf5" />
-        <StatCard icon="❌" value={rejected} label="Rejected" color="#ef4444" bg="#fef2f2" />
-      </div>
-
-      {/* ════════════ MIDDLE ROW ════════════ */}
-      <div className="dash2-mid-row">
-        
-        {/* Funnel Chart */}
-        <div className="dash2-card">
-          <div className="dash2-card-header">
-            <div>
-              <h2 className="dash2-card-title">Application Funnel</h2>
-              <div className="dash2-card-sub">How your pipeline is distributed</div>
-            </div>
-            <div className="dash2-funnel-total">
-              <span>{total}</span> total
-            </div>
-          </div>
-          
-          <div className="dash2-funnel-list">
-            {funnelStages.map(stage => {
-              const width = total === 0 ? '0%' : `${(stage.count / maxFunnel) * 100}%`;
-              const cfg = STATUS_CONFIG[stage.key];
-              return (
-                <div key={stage.key} className="dash2-funnel-row">
-                  <div className="dash2-funnel-label">{stage.label}</div>
-                  <div className="dash2-funnel-track">
-                    <div className="dash2-funnel-fill" style={{ width, background: cfg.color }}></div>
-                  </div>
-                  <div className="dash2-funnel-count">{stage.count}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* All Statuses Grid */}
-        <div className="dash2-card">
-          <div className="dash2-card-header">
-            <div>
-              <h2 className="dash2-card-title">All Statuses</h2>
-              <div className="dash2-card-sub">Every stage at a glance</div>
-            </div>
-          </div>
-          <div className="dash2-status-grid">
-            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
-              const count = byStatus[key] || 0;
-              return (
-                <div key={key} className="dash2-status-pill-card" style={{ '--sp-color': cfg.color, '--sp-bg': cfg.bg }}>
-                  <div className="dash2-sp-icon">{cfg.icon}</div>
-                  <div className="dash2-sp-count">{count}</div>
-                  <div className="dash2-sp-label">{cfg.label}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-      </div>
-
-      {/* ════════════ BOTTOM ROW ════════════ */}
-      <div className="dash2-bottom-row">
-        
-        {/* Recent Applications */}
-        <div className="dash2-card">
-          <div className="dash2-card-header">
-            <div>
-              <h2 className="dash2-card-title">Recent Activity</h2>
-              <div className="dash2-card-sub">Your latest job applications</div>
-            </div>
-            <Link to="/jobs" className="dash2-view-all">View All</Link>
-          </div>
-
-          {recentJobs.length === 0 ? (
-            <div className="dash2-empty">
-              <div className="dash2-empty-icon">📂</div>
-              <div>No applications tracked yet.</div>
-              <Link to="/jobs/new" className="dash2-cta-primary" style={{ marginTop: '0.5rem', padding: '0.5rem 1rem' }}>
-                Add First Job
+          {/* ---- Recruitment Progress / Job List Card ---- */}
+          <div className="db-card">
+            <div className="db-card-header">
+              <h2 className="db-card-title">Recruitment Progress</h2>
+              <Link to="/jobs" className="db-view-all-btn">
+                View All
               </Link>
             </div>
-          ) : (
-            <div className="dash2-recent-list">
-              {recentJobs.map((job, idx) => {
-                const cfg = STATUS_CONFIG[job.status] || STATUS_CONFIG.applied;
+
+            <div className="db-table-wrapper">
+              {recentJobs.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-3)' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📂</div>
+                  <div>No job applications found. Create one to get started!</div>
+                </div>
+              ) : (
+                <table className="db-table">
+                  <thead>
+                    <tr>
+                      <th>Full Name / Company</th>
+                      <th>Designation</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentJobs.map(job => {
+                      const cfg = STATUS_BADGES[job.status] || STATUS_BADGES.applied;
+                      const initial = job.company?.[0] || 'C';
+                      return (
+                        <tr key={job.id}>
+                          <td>
+                            <div className="db-user-cell">
+                              <div className="db-user-avatar">
+                                {initial}
+                              </div>
+                              <div className="db-user-info-text">
+                                <div className="db-user-name">{job.position}</div>
+                                <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 600 }}>{job.company}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="db-designation-badge">
+                              {job.location || 'Remote'}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="db-status-cell" style={{ background: cfg.bg, padding: '0.3rem 0.8rem', borderRadius: '999px', display: 'inline-flex', color: cfg.color }}>
+                              <span className="db-status-dot" style={{ background: cfg.dot }}></span>
+                              <span className="db-status-text">{cfg.label}</span>
+                            </div>
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            <span className="db-row-actions" onClick={() => navigate(`/jobs/${job.id}/edit`)}>
+                              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                              </svg>
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+        </div>
+
+        {/* ════════════ RIGHT COLUMN ════════════ */}
+        <div className="db-right-col">
+          
+          {/* ---- Mini Calendar Component ---- */}
+          <div className="db-calendar-card">
+            
+            {/* Header: Title + Slider Arrows */}
+            <div className="db-calendar-header">
+              <span className="db-calendar-month-title">
+                {MONTH_NAMES[month]}, {year}
+              </span>
+              <div className="db-calendar-arrows">
+                <button className="db-calendar-arrow-btn" onClick={prevMonth} aria-label="Previous Month">
+                  ◀
+                </button>
+                <button className="db-calendar-arrow-btn" onClick={nextMonth} aria-label="Next Month">
+                  ▶
+                </button>
+              </div>
+            </div>
+
+            {/* Dribbble Calendar from/to dates inputs */}
+            <div className="db-calendar-inputs">
+              <div className="db-calendar-input-wrap">
+                <label>From</label>
+                <input 
+                  type="date" 
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+              <div className="db-calendar-input-wrap">
+                <label>To</label>
+                <input 
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Weekdays */}
+            <div className="db-calendar-weekdays">
+              <span className="db-calendar-weekday">Su</span>
+              <span className="db-calendar-weekday">Mo</span>
+              <span className="db-calendar-weekday">Tu</span>
+              <span className="db-calendar-weekday">We</span>
+              <span className="db-calendar-weekday">Th</span>
+              <span className="db-calendar-weekday">Fr</span>
+              <span className="db-calendar-weekday">Sa</span>
+            </div>
+
+            {/* Days Grid */}
+            <div className="db-calendar-days-grid">
+              {/* Padding empty spaces */}
+              {Array.from({ length: firstDayIndex }).map((_, idx) => (
+                <div key={`empty-${idx}`} className="db-calendar-day-cell empty"></div>
+              ))}
+              
+              {/* Day numbers */}
+              {Array.from({ length: daysInMonth }).map((_, idx) => {
+                const dayNum = idx + 1;
+                const cellDate = new Date(year, month, dayNum);
+                const isSelected = 
+                  selectedDate.getDate() === dayNum &&
+                  selectedDate.getMonth() === month &&
+                  selectedDate.getFullYear() === year;
+                  
+                const isToday = 
+                  new Date().getDate() === dayNum &&
+                  new Date().getMonth() === month &&
+                  new Date().getFullYear() === year;
+
+                // Find events for this specific day cell
+                const dayEvents = getEventsForDay(year, month, dayNum);
+                const hasApplied = dayEvents.some(e => e.type === 'applied');
+                const hasInterview = dayEvents.some(e => e.type === 'interview');
+                const hasOffer = dayEvents.some(e => e.type === 'offer');
+
                 return (
-                  <div key={job.id} className="dash2-recent-item" style={{ animationDelay: `${idx * 0.05}s` }}>
-                    <div className="dash2-recent-num">{idx + 1}</div>
-                    <div className="dash2-recent-info">
-                      <div className="dash2-recent-pos">{job.position}</div>
-                      <div className="dash2-recent-co">
-                        🏢 {job.company}
-                        {job.location && ` • 📍 ${job.location}`}
+                  <div
+                    key={`day-${dayNum}`}
+                    className={`db-calendar-day-cell ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
+                    onClick={() => setSelectedDate(cellDate)}
+                  >
+                    {dayNum}
+                    
+                    {/* Event markers dots */}
+                    {dayEvents.length > 0 && (
+                      <div className="db-calendar-dots">
+                        {hasApplied && <span className="db-calendar-dot applied"></span>}
+                        {hasInterview && <span className="db-calendar-dot interview"></span>}
+                        {hasOffer && <span className="db-calendar-dot offer"></span>}
                       </div>
-                    </div>
-                    <div className="dash2-recent-badge" style={{ background: cfg.bg, color: cfg.color }}>
-                      {cfg.label}
-                    </div>
+                    )}
                   </div>
                 );
               })}
             </div>
-          )}
-        </div>
 
-        {/* Side Column (Goals & Tips) */}
-        <div className="dash2-side-col">
-          
-          <div className="dash2-card dash2-goal-card">
-            <div className="dash2-goal-header">
-              <div className="dash2-goal-emoji">🎯</div>
-              <div>
-                <h3 className="dash2-goal-title">Weekly Goal</h3>
-                <div className="dash2-goal-sub">Track 5 new applications</div>
-              </div>
+            {/* Calendar Events Details Drawer */}
+            <div className="db-calendar-events-drawer">
+              <h3 className="db-calendar-drawer-title">
+                Events for {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </h3>
+              {selectedDayEvents.length === 0 ? (
+                <div className="db-calendar-no-events">No events scheduled.</div>
+              ) : (
+                <div>
+                  {selectedDayEvents.map((evt, idx) => (
+                    <div 
+                      key={`evt-${idx}`} 
+                      className="db-calendar-event-item"
+                      style={{ borderLeft: `4px solid ${evt.type === 'interview' ? '#ffb703' : evt.type === 'offer' ? '#10b981' : '#3b82f6'}`, paddingLeft: '8px' }}
+                    >
+                      {evt.label}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="dash2-goal-bar-track">
-              <div className="dash2-goal-bar-fill" style={{ width: `${Math.min((total / 5) * 100, 100)}%` }}></div>
-            </div>
-            <div className="dash2-goal-note">
-              {total >= 5 ? 'Goal reached! Amazing job 🌟' : `${5 - total} more to go this week!`}
-            </div>
+
           </div>
 
-          <div className="dash2-card">
-            <div className="dash2-card-header" style={{ marginBottom: '1rem' }}>
-              <h2 className="dash2-card-title">Pro Tips</h2>
-            </div>
-            <div className="dash2-tips-list">
-              <div className="dash2-tip-item">
-                <div className="dash2-tip-icon" style={{ background: '#e0f2fe', color: '#0284c7' }}>💡</div>
-                <div className="dash2-tip-text">Tailor your resume for each role using keywords from the job description.</div>
-              </div>
-              <div className="dash2-tip-item">
-                <div className="dash2-tip-icon" style={{ background: '#fce7f3', color: '#db2777' }}>💬</div>
-                <div className="dash2-tip-text">Follow up 1 week after applying to show genuine interest and initiative.</div>
-              </div>
-              <div className="dash2-tip-item">
-                <div className="dash2-tip-icon" style={{ background: '#d1fae5', color: '#059669' }}>🤝</div>
-                <div className="dash2-tip-text">Network on LinkedIn — 70% of jobs are filled through connections.</div>
+          {/* ---- User Profile Card ---- */}
+          <div className="db-profile-card">
+            
+            {/* Centered Avatar */}
+            <div className="db-profile-avatar-wrap">
+              <div className="db-profile-avatar">
+                {userInitials}
               </div>
             </div>
-          </div>
 
-          {/* Motivational Quote */}
-          <div className="dash2-card dash2-quote-card">
-            <div style={{ fontSize: '1.4rem', marginBottom: '0.6rem' }}>💬</div>
-            <p className="dash2-quote-text">
-              &ldquo;The secret of getting ahead is getting started.&rdquo;
+            {/* User Title Information */}
+            <h3 className="db-profile-name">{user?.firstName} {user?.lastName || ''}</h3>
+            <p className="db-profile-title">
+              {user?.role === 'admin' ? 'Sr. System Administrator' : 'Candidate (Job Seeker)'}
             </p>
-            <p className="dash2-quote-author">— Mark Twain</p>
+
+            {/* Fuzle call/mail/message circular icons */}
+            <div className="db-profile-actions">
+              <a href={`tel:+1234567890`} className="db-profile-action-circle" title="Call User">
+                📞
+              </a>
+              <a href={`mailto:${user?.email || ''}`} className="db-profile-action-circle" title="Email User">
+                ✉️
+              </a>
+              <div className="db-profile-action-circle" onClick={() => navigate('/settings')} title="Message User">
+                💬
+              </div>
+            </div>
+
+            {/* TwitHR Profile Metadata rows */}
+            <div className="db-profile-metadata">
+              <div className="db-profile-meta-row">
+                <span className="db-profile-meta-label">Target Field</span>
+                <span className="db-profile-meta-value">Software Engineering</span>
+              </div>
+              <div className="db-profile-meta-row">
+                <span className="db-profile-meta-label">Joined Date</span>
+                <span className="db-profile-meta-value">
+                  {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                </span>
+              </div>
+              <div className="db-profile-meta-row">
+                <span className="db-profile-meta-label">Total Tracker List</span>
+                <span className="db-profile-meta-value">{jobs.length} Applications</span>
+              </div>
+            </div>
+
           </div>
 
         </div>
 
       </div>
-
     </div>
   );
 }

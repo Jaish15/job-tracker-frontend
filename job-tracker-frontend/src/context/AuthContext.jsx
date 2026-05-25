@@ -4,11 +4,44 @@ import { authApi } from '../api/auth';
 
 const AuthContext = createContext(null);
 
+const getOAuthUserAndToken = () => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payloadStr = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+        const payload = JSON.parse(payloadStr);
+        
+        const oauthUser = {
+          id: payload.sub,
+          email: payload.email,
+          firstName: payload.firstName || 'User',
+          lastName: payload.lastName || '',
+          role: payload.role || 'user',
+        };
+        
+        localStorage.setItem('accessToken', token);
+        localStorage.setItem('user', JSON.stringify(oauthUser));
+        
+        // Remove token from address bar
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+        
+        return oauthUser;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to parse OAuth token:', err);
+  }
+  
+  const stored = localStorage.getItem('user');
+  return stored ? JSON.parse(stored) : null;
+};
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState(() => getOAuthUserAndToken());
   const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {

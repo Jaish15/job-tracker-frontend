@@ -100,8 +100,12 @@ export function Sidebar({ collapsed }) {
     <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">💼</div>
-        {!collapsed && <span className="sidebar-logo-text">JobTracker</span>}
+        <div className="sidebar-logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="#fb8500">
+            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+          </svg>
+        </div>
+        {!collapsed && <span className="sidebar-logo-text" style={{ color: '#ffffff', fontWeight: 900, fontSize: '1.25rem' }}>TwitHR</span>}
       </div>
 
       {/* Nav */}
@@ -115,7 +119,6 @@ export function Sidebar({ collapsed }) {
           >
             <span className="sidebar-link-icon">{item.icon}</span>
             {!collapsed && <span className="sidebar-link-label">{item.label}</span>}
-            {isActive(item.path) && <span className="sidebar-active-glow" aria-hidden="true" />}
           </Link>
         ))}
       </nav>
@@ -123,8 +126,8 @@ export function Sidebar({ collapsed }) {
       {/* Bottom */}
       <div className="sidebar-bottom">
         <Link
-          to="/profile"
-          className={`sidebar-link ${isActive('/profile') ? 'active' : ''}`}
+          to="/settings"
+          className={`sidebar-link ${isActive('/settings') ? 'active' : ''}`}
           title={collapsed ? 'Settings' : undefined}
         >
           <span className="sidebar-link-icon">{SETTINGS_ITEM.icon}</span>
@@ -145,6 +148,15 @@ export function Sidebar({ collapsed }) {
           </span>
           {!collapsed && <span className="sidebar-link-label">Logout</span>}
         </button>
+
+        {/* Promo Box from reference */}
+        {!collapsed && (
+          <div className="sidebar-promo-card">
+            <h4 className="promo-title">Use our Premium Features Now!</h4>
+            <p className="promo-desc">Unlock advanced tracking & resume analyzers.</p>
+            <Link to="/settings" className="promo-btn">Upgrade Now</Link>
+          </div>
+        )}
       </div>
     </aside>
   );
