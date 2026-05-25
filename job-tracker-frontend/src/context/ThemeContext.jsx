@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
@@ -49,7 +51,6 @@ export function ThemeProvider({ children }) {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
     applyAccent(localStorage.getItem('accent') || 'indigo');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

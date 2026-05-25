@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
 
 const NAV_ITEMS = [
   {
@@ -80,8 +79,8 @@ const SETTINGS_ITEM = {
   ),
 };
 
-export function Sidebar({ collapsed, onToggle }) {
-  const { user, logout, isAdmin } = useAuth();
+export function Sidebar({ collapsed }) {
+  const { logout, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 

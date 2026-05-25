@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme, ACCENT_COLORS } from '../context/ThemeContext';

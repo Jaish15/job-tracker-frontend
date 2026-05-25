@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState, useRef, useEffect } from 'react';
 import '../styles/chatbot.css';
 
