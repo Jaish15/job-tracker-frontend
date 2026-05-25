@@ -235,7 +235,7 @@ export function Jobs() {
         <Link to="/jobs/new" className="btn btn-primary" id="add-job-btn">+ Add Job</Link>
       </div>
 
-      {/* Aesthetic Intro Banner Card utilizing purple-hoodie.jpg */}
+      {/* Aesthetic Intro Banner Card utilizing coffee-girl.jpg */}
       <div className="jobs-aesthetic-banner" style={{
         background: 'linear-gradient(135deg, #ede9fe 0%, #fae8ff 100%)',
         border: '1px solid #e9d5ff',
@@ -257,8 +257,8 @@ export function Jobs() {
         </div>
         <div style={{ flexShrink: 0 }}>
           <img 
-            src="/purple-hoodie.jpg" 
-            alt="Purple Hoodie Developer Illustration" 
+            src="/coffee-girl.jpg" 
+            alt="Coffee Sipping Girl Illustration" 
             style={{ 
               width: '90px', 
               height: '90px', 

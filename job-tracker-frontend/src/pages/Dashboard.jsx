@@ -178,11 +178,11 @@ export function Dashboard() {
                 </Link>
               </div>
 
-              {/* Coffee Girl Illustration replacing the basic outline shapes */}
+              {/* Purple Hoodie Illustration replacing the coffee girl */}
               <div className="db-hero-right">
                 <img 
-                  src="/coffee-girl.jpg" 
-                  alt="Cozy workspace study illustration" 
+                  src="/purple-hoodie.jpg" 
+                  alt="Developer working on laptop illustration" 
                   className="hero-vector-svg"
                   style={{
                     maxWidth: '180px',

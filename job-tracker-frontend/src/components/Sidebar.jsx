@@ -146,15 +146,6 @@ export function Sidebar({ collapsed }) {
           </span>
           {!collapsed && <span className="sidebar-link-label">Logout</span>}
         </button>
-
-        {/* Promo Box from reference */}
-        {!collapsed && (
-          <div className="sidebar-promo-card">
-            <h4 className="promo-title">Use our Premium Features Now!</h4>
-            <p className="promo-desc">Unlock advanced tracking & resume analyzers.</p>
-            <Link to="/settings" className="promo-btn">Upgrade Now</Link>
-          </div>
-        )}
       </div>
     </aside>
   );
