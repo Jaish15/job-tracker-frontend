@@ -227,12 +227,47 @@ export function Jobs() {
   /* ── Render ────────────── */
   return (
     <div className="page">
-      <div className="page-header">
+      <div className="page-header" style={{ marginBottom: '1.5rem' }}>
         <div>
           <h1>Jobs</h1>
           <p className="page-subtitle">Track your applications, browse live listings, or discover job boards</p>
         </div>
         <Link to="/jobs/new" className="btn btn-primary" id="add-job-btn">+ Add Job</Link>
+      </div>
+
+      {/* Aesthetic Intro Banner Card utilizing purple-hoodie.jpg */}
+      <div className="jobs-aesthetic-banner" style={{
+        background: 'linear-gradient(135deg, #ede9fe 0%, #fae8ff 100%)',
+        border: '1px solid #e9d5ff',
+        borderRadius: '24px',
+        padding: '1.5rem 2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '2rem',
+        marginBottom: '2rem',
+        boxShadow: '0 4px 20px rgba(124, 58, 237, 0.05)',
+        color: '#4c1d95'
+      }}>
+        <div style={{ flex: 1 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: '#5c5fc0' }}>Keep track of every opportunity!</h2>
+          <p style={{ fontSize: '0.88rem', opacity: 0.9, lineHeight: 1.5, maxWidth: '560px', color: '#4b5563', fontWeight: 500 }}>
+            Managing your applications systematically is key to job search success. Update statuses, log interviews, and keep notes on every prospective role to optimize your placement journey.
+          </p>
+        </div>
+        <div style={{ flexShrink: 0 }}>
+          <img 
+            src="/purple-hoodie.jpg" 
+            alt="Purple Hoodie Developer Illustration" 
+            style={{ 
+              width: '90px', 
+              height: '90px', 
+              borderRadius: '16px', 
+              boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
       </div>
 
       {/* ── Tab switcher ── */}

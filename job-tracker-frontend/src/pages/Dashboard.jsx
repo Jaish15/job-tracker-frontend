@@ -82,26 +82,50 @@ export function Dashboard() {
     return `${y}-${mm}-${dd}`;
   };
 
+  const normalizeToYYYYMMDD = (dateVal) => {
+    if (!dateVal) return null;
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) {
+        const match = dateVal.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (match) {
+          return `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`;
+        }
+        const usMatch = dateVal.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+        if (usMatch) {
+          return `${usMatch[3]}-${usMatch[1].padStart(2, '0')}-${usMatch[2].padStart(2, '0')}`;
+        }
+        return null;
+      }
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    } catch (e) {
+      return null;
+    }
+  };
+
   // Get job events for a particular day
   const getEventsForDay = (y, m, d) => {
     const dateStr = formatDateKey(y, m, d);
     const dayEvents = [];
 
     jobs.forEach(job => {
-      // Helper check function
       const matchesDate = (fieldDate) => {
         if (!fieldDate) return false;
-        return fieldDate.startsWith(dateStr);
+        const normalized = normalizeToYYYYMMDD(fieldDate);
+        return normalized === dateStr;
       };
 
       if (matchesDate(job.appliedDate)) {
-        dayEvents.push({ type: 'applied', label: `📤 Applied to ${job.company}`, job });
+        dayEvents.push({ type: 'applied', label: `Applied to ${job.company}`, job });
       }
       if (matchesDate(job.interviewDate)) {
-        dayEvents.push({ type: 'interview', label: `🎯 Interview with ${job.company}`, job });
+        dayEvents.push({ type: 'interview', label: `Interview with ${job.company}`, job });
       }
       if (matchesDate(job.offerDate)) {
-        dayEvents.push({ type: 'offer', label: `🎉 Received Offer from ${job.company}!`, job });
+        dayEvents.push({ type: 'offer', label: `Received Offer from ${job.company}!`, job });
       }
     });
 
@@ -115,11 +139,13 @@ export function Dashboard() {
     selectedDate.getDate()
   );
 
-  const selectedDayEvents = getEventsForDay(
-    selectedDate.getFullYear(),
-    selectedDate.getMonth(),
-    selectedDate.getDate()
-  );
+  const selectedDayJobs = jobs.filter(job => {
+    return (
+      normalizeToYYYYMMDD(job.appliedDate) === selectedDateKey ||
+      normalizeToYYYYMMDD(job.interviewDate) === selectedDateKey ||
+      normalizeToYYYYMMDD(job.offerDate) === selectedDateKey
+    );
+  });
 
   // Month Names array
   const MONTH_NAMES = [
@@ -152,35 +178,19 @@ export function Dashboard() {
                 </Link>
               </div>
 
-              {/* TwitHR laptop/workers vector representation */}
+              {/* Coffee Girl Illustration replacing the basic outline shapes */}
               <div className="db-hero-right">
-                <svg className="hero-vector-svg" viewBox="0 0 200 200" fill="none">
-                  {/* Desk background layer */}
-                  <rect x="20" y="145" width="160" height="6" rx="3" fill="#ffffff" fillOpacity="0.25"/>
-                  {/* Laptop base */}
-                  <rect x="68" y="90" width="64" height="42" rx="4" fill="#ffffff" fillOpacity="0.95"/>
-                  <rect x="73" y="95" width="54" height="32" rx="2" fill="#5c5fc0"/>
-                  <polygon points="56,132 144,132 134,142 66,142" fill="#ffffff" fillOpacity="0.8"/>
-                  
-                  {/* Desk Mug */}
-                  <rect x="150" y="115" width="14" height="20" rx="3" fill="#ffffff" fillOpacity="0.6"/>
-                  <path d="M162 120 C166 120 166 130 162 130" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.6"/>
-                  
-                  {/* Floating symbols */}
-                  <circle cx="150" cy="40" r="5" fill="#ffb703"/>
-                  <circle cx="45" cy="50" r="7" fill="#ffffff" fillOpacity="0.25"/>
-                  <path d="M100 35 L108 43 L92 43 Z" fill="#ffb703" opacity="0.8"/>
-
-                  {/* Worker Sitting Left (Mary style) */}
-                  <circle cx="52" cy="72" r="10" fill="#ffd166"/>
-                  <path d="M36 112 C36 88 68 88 68 112 L64 135 L40 135 Z" fill="#ffffff" fillOpacity="0.9"/>
-                  <path d="M48 94 L66 108" stroke="#ffffff" strokeWidth="4" strokeLinecap="round"/>
-                  
-                  {/* Worker Standing Right (Smith style) */}
-                  <circle cx="142" cy="65" r="10" fill="#ffd166"/>
-                  <path d="M126 105 C126 80 158 80 158 105 L154 140 L130 140 Z" fill="#ffb703"/>
-                  <path d="M136 88 L116 102" stroke="#ffb703" strokeWidth="4" strokeLinecap="round"/>
-                </svg>
+                <img 
+                  src="/coffee-girl.jpg" 
+                  alt="Cozy workspace study illustration" 
+                  className="hero-vector-svg"
+                  style={{
+                    maxWidth: '180px',
+                    borderRadius: '16px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                    objectFit: 'contain'
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -359,21 +369,84 @@ export function Dashboard() {
             {/* Calendar Events Details Drawer */}
             <div className="db-calendar-events-drawer">
               <h3 className="db-calendar-drawer-title">
-                Events for {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                Applications for {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </h3>
-              {selectedDayEvents.length === 0 ? (
-                <div className="db-calendar-no-events">No events scheduled.</div>
+              {selectedDayJobs.length === 0 ? (
+                <div className="db-calendar-no-events">No applications/events scheduled for this date.</div>
               ) : (
-                <div>
-                  {selectedDayEvents.map((evt, idx) => (
-                    <div 
-                      key={`evt-${idx}`} 
-                      className="db-calendar-event-item"
-                      style={{ borderLeft: `4px solid ${evt.type === 'interview' ? '#ffb703' : evt.type === 'offer' ? '#10b981' : '#3b82f6'}`, paddingLeft: '8px' }}
-                    >
-                      {evt.label}
-                    </div>
-                  ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {selectedDayJobs.map((job) => {
+                    const cfg = STATUS_BADGES[job.status] || STATUS_BADGES.applied;
+                    const initial = job.company?.[0] || 'C';
+                    
+                    // Determine which event is on this day
+                    const targetStr = formatDateKey(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                    let eventLabel = 'Applied Date';
+                    let eventBadgeColor = '#3b82f6';
+                    if (normalizeToYYYYMMDD(job.interviewDate) === targetStr) {
+                      eventLabel = 'Interview Date';
+                      eventBadgeColor = '#ffb703';
+                    } else if (normalizeToYYYYMMDD(job.offerDate) === targetStr) {
+                      eventLabel = 'Offer Date';
+                      eventBadgeColor = '#10b981';
+                    }
+
+                    return (
+                      <div 
+                        key={job.id} 
+                        className="db-calendar-event-item"
+                        onClick={() => navigate(`/jobs/${job.id}/edit`)}
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '0.75rem',
+                          padding: '0.75rem',
+                          background: 'var(--surface-2)',
+                          borderRadius: '12px',
+                          border: '1px solid var(--border)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.borderColor = '#5c5fc0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.borderColor = 'var(--border)';
+                        }}
+                      >
+                        <div className="db-user-avatar" style={{ width: '32px', height: '32px', fontSize: '0.75rem', background: '#eef2ff', color: '#5c5fc0' }}>
+                          {initial}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {job.position}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 600 }}>
+                            🏢 {job.company}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem' }}>
+                          <span style={{ 
+                            fontSize: '0.65rem', 
+                            fontWeight: 800, 
+                            color: '#ffffff', 
+                            background: eventBadgeColor, 
+                            padding: '0.15rem 0.4rem', 
+                            borderRadius: '4px',
+                            textTransform: 'uppercase'
+                          }}>
+                            {eventLabel}
+                          </span>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: cfg.color }}>
+                            {cfg.label}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -381,49 +454,66 @@ export function Dashboard() {
           </div>
 
           {/* ---- User Profile Card ---- */}
-          <div className="db-profile-card">
+          <div className="db-profile-card" style={{ padding: '0 0 2rem 0', overflow: 'hidden' }}>
             
-            {/* Centered Avatar */}
-            <div className="db-profile-avatar-wrap">
-              <div className="db-profile-avatar">
+            {/* Spotlight Designer Banner Header */}
+            <div style={{ position: 'relative', height: '140px', width: '100%', marginBottom: '2.5rem' }}>
+              <img 
+                src="/spotlight-designer.jpg" 
+                alt="Spotlight Designer Banner" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
+              <div className="db-profile-avatar" style={{ 
+                position: 'absolute', 
+                bottom: '-25px', 
+                left: '50%', 
+                transform: 'translateX(-50%)',
+                width: '66px',
+                height: '66px',
+                fontSize: '1.3rem',
+                border: '4px solid #ffffff',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}>
                 {userInitials}
               </div>
             </div>
 
-            {/* User Title Information */}
-            <h3 className="db-profile-name">{user?.firstName} {user?.lastName || ''}</h3>
-            <p className="db-profile-title">
-              {user?.role === 'admin' ? 'Sr. System Administrator' : 'Candidate (Job Seeker)'}
-            </p>
+            <div style={{ padding: '0 2rem' }}>
+              {/* User Title Information */}
+              <h3 className="db-profile-name">{user?.firstName} {user?.lastName || ''}</h3>
+              <p className="db-profile-title">
+                {user?.role === 'admin' ? 'Sr. System Administrator' : 'Candidate (Job Seeker)'}
+              </p>
 
-            {/* Fuzle call/mail/message circular icons */}
-            <div className="db-profile-actions">
-              <a href={`tel:+1234567890`} className="db-profile-action-circle" title="Call User">
-                📞
-              </a>
-              <a href={`mailto:${user?.email || ''}`} className="db-profile-action-circle" title="Email User">
-                ✉️
-              </a>
-              <div className="db-profile-action-circle" onClick={() => navigate('/settings')} title="Message User">
-                💬
+              {/* call/mail/message circular icons */}
+              <div className="db-profile-actions">
+                <a href={`tel:+1234567890`} className="db-profile-action-circle" title="Call User">
+                  📞
+                </a>
+                <a href={`mailto:${user?.email || ''}`} className="db-profile-action-circle" title="Email User">
+                  ✉️
+                </a>
+                <div className="db-profile-action-circle" onClick={() => navigate('/settings')} title="Message User">
+                  💬
+                </div>
               </div>
-            </div>
 
-            {/* TwitHR Profile Metadata rows */}
-            <div className="db-profile-metadata">
-              <div className="db-profile-meta-row">
-                <span className="db-profile-meta-label">Target Field</span>
-                <span className="db-profile-meta-value">Software Engineering</span>
-              </div>
-              <div className="db-profile-meta-row">
-                <span className="db-profile-meta-label">Joined Date</span>
-                <span className="db-profile-meta-value">
-                  {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
-                </span>
-              </div>
-              <div className="db-profile-meta-row">
-                <span className="db-profile-meta-label">Total Tracker List</span>
-                <span className="db-profile-meta-value">{jobs.length} Applications</span>
+              {/* Profile Metadata rows */}
+              <div className="db-profile-metadata">
+                <div className="db-profile-meta-row">
+                  <span className="db-profile-meta-label">Target Field</span>
+                  <span className="db-profile-meta-value">Software Engineering</span>
+                </div>
+                <div className="db-profile-meta-row">
+                  <span className="db-profile-meta-label">Joined Date</span>
+                  <span className="db-profile-meta-value">
+                    {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                  </span>
+                </div>
+                <div className="db-profile-meta-row">
+                  <span className="db-profile-meta-label">Total Tracker List</span>
+                  <span className="db-profile-meta-value">{jobs.length} Applications</span>
+                </div>
               </div>
             </div>
 
