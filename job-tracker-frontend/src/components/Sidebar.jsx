@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const NAV_ITEMS = [
   {
@@ -81,6 +82,7 @@ const SETTINGS_ITEM = {
 
 export function Sidebar({ collapsed }) {
   const { logout, isAdmin } = useAuth();
+  const { darkMode } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -99,11 +101,18 @@ export function Sidebar({ collapsed }) {
   return (
     <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Logo */}
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
-          💼
-        </div>
-        {!collapsed && <span className="sidebar-logo-text" style={{ color: '#ffffff', fontWeight: 900, fontSize: '1.25rem' }}>jobtracker</span>}
+      <div className="sidebar-logo" style={{ display: 'flex', justifyContent: 'center', padding: collapsed ? '0 0.5rem' : '0 1.25rem', transition: 'all 0.3s ease' }}>
+        <img 
+          src={darkMode ? '/logo-dark.png' : '/logo-light.png'} 
+          alt="JobTracker Logo" 
+          style={{ 
+            height: collapsed ? '40px' : '44px', 
+            width: collapsed ? '40px' : 'auto', 
+            maxWidth: '100%',
+            objectFit: 'contain', 
+            transition: 'all 0.3s ease' 
+          }} 
+        />
       </div>
 
       {/* Nav */}
