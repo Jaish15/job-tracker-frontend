@@ -113,7 +113,6 @@ export function Dashboard() {
   // Derived stats - calculated directly from jobs for absolute accuracy & backend independence
   const activeCount = jobs.filter(job => !['rejected', 'withdrawn'].includes(job.status)).length;
   const offersCount = stats?.byStatus?.offer || 0;
-  const recentJobs = jobs.slice(0, 4); // Show top 4 like reference
 
   /* ── Calendar Helper Logic ── */
   const year = currentMonth.getFullYear();
@@ -202,6 +201,17 @@ export function Dashboard() {
     );
   });
 
+  // Prepend selected day's jobs and slice to show top 4
+  const recentJobs = (() => {
+    if (selectedDayJobs.length > 0) {
+      const selectedIds = new Set(selectedDayJobs.map(sj => sj.id));
+      const others = jobs.filter(j => !selectedIds.has(j.id));
+      return [...selectedDayJobs, ...others].slice(0, 4);
+    }
+    return jobs.slice(0, 4);
+  })();
+
+
   // Month Names array
   const MONTH_NAMES = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -279,8 +289,10 @@ export function Dashboard() {
                     {recentJobs.map(job => {
                       const cfg = STATUS_BADGES[job.status] || STATUS_BADGES.applied;
                       const initial = job.company?.[0] || 'C';
+                      const isHighlighted = selectedDayJobs.some(sj => sj.id === job.id);
                       return (
-                        <tr key={job.id}>
+                        <tr key={job.id} className={isHighlighted ? 'highlighted-job-row' : ''}>
+
                           <td>
                             <div className="db-user-cell">
                               <div className="db-user-avatar">
@@ -535,90 +547,7 @@ export function Dashboard() {
               })}
             </div>
 
-            {/* Calendar Events Details Drawer */}
-            <div className="db-calendar-events-drawer">
-              <h3 className="db-calendar-drawer-title">
-                Applications for {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </h3>
-              {selectedDayJobs.length === 0 ? (
-                <div className="db-calendar-no-events">No applications/events scheduled for this date.</div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                  {selectedDayJobs.map((job) => {
-                    const cfg = STATUS_BADGES[job.status] || STATUS_BADGES.applied;
-                    const initial = job.company?.[0] || 'C';
-                    
-                    // Determine which event is on this day
-                    const targetStr = formatDateKey(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-                    let eventLabel = 'Applied Date';
-                    let eventBadgeColor = '#3b82f6';
-                    if (normalizeToYYYYMMDD(job.interviewDate) === targetStr) {
-                      eventLabel = 'Interview Date';
-                      eventBadgeColor = '#ffb703';
-                    } else if (normalizeToYYYYMMDD(job.offerDate) === targetStr) {
-                      eventLabel = 'Offer Date';
-                      eventBadgeColor = '#10b981';
-                    }
 
-                    return (
-                      <div 
-                        key={job.id} 
-                        className="db-calendar-event-item"
-                        onClick={() => navigate(`/jobs/${job.id}/edit`)}
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '0.75rem',
-                          padding: '0.75rem',
-                          background: 'var(--surface-2)',
-                          borderRadius: '12px',
-                          border: '1px solid var(--border)',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          textAlign: 'left'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.borderColor = '#5c5fc0';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.borderColor = 'var(--border)';
-                        }}
-                      >
-                        <div className="db-user-avatar" style={{ width: '32px', height: '32px', fontSize: '0.75rem', background: '#eef2ff', color: '#5c5fc0' }}>
-                          {initial}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {job.position}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 600 }}>
-                            🏢 {job.company}
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem' }}>
-                          <span style={{ 
-                            fontSize: '0.65rem', 
-                            fontWeight: 800, 
-                            color: '#ffffff', 
-                            background: eventBadgeColor, 
-                            padding: '0.15rem 0.4rem', 
-                            borderRadius: '4px',
-                            textTransform: 'uppercase'
-                          }}>
-                            {eventLabel}
-                          </span>
-                          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: cfg.color }}>
-                            {cfg.label}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
 
           </div>
 

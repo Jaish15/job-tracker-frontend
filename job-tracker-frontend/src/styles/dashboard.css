@@ -187,6 +187,43 @@
   background-color: var(--surface-2);
 }
 
+/* Dynamic highlighting for date-selected applications */
+@keyframes highlightGlow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.008); filter: brightness(1.03); }
+  100% { transform: scale(1); }
+}
+
+.db-table tr.highlighted-job-row {
+  animation: highlightGlow 0.6s ease-in-out 1;
+}
+
+.db-table tr.highlighted-job-row td {
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
+  border-top: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transition: all 0.3s ease;
+}
+
+.db-table tr.highlighted-job-row td .db-user-name {
+  color: var(--accent) !important;
+  font-weight: 800;
+}
+
+.db-table tr.highlighted-job-row td:first-child {
+  border-left: 4px solid var(--accent) !important;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.db-table tr.highlighted-job-row td:last-child {
+  border-right: 1.5px solid var(--accent);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+
 /* Custom table fields from TwitHR */
 .db-user-cell {
   display: flex;
