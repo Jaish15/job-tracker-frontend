@@ -13,6 +13,14 @@ const JOB_STATUSES = [
   { value: 'withdrawn', label: 'Withdrawn' },
 ];
 
+const getTodayString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const EMPTY_FORM = {
   company: '',
   position: '',
@@ -21,10 +29,11 @@ const EMPTY_FORM = {
   salary: '',
   status: 'wishlist',
   notes: '',
-  appliedDate: '',
+  appliedDate: getTodayString(),
   interviewDate: '',
   offerDate: '',
 };
+
 
 export function JobForm() {
   const { id }       = useParams();

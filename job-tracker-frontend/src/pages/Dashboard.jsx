@@ -82,8 +82,7 @@ export function Dashboard() {
   /* ── Interactive Calendar State ── */
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+
 
   useEffect(() => {
     (async () => {
@@ -476,25 +475,6 @@ export function Dashboard() {
               </div>
             </div>
 
-            {/* Dribbble Calendar from/to dates inputs */}
-            <div className="db-calendar-inputs">
-              <div className="db-calendar-input-wrap">
-                <label>From</label>
-                <input 
-                  type="date" 
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
-              </div>
-              <div className="db-calendar-input-wrap">
-                <label>To</label>
-                <input 
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                />
-              </div>
-            </div>
 
             {/* Weekdays */}
             <div className="db-calendar-weekdays">
