@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Local Env
+.env
+.env.local
+.env.development
+.env.production
+
