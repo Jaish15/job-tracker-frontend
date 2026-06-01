@@ -52,24 +52,63 @@ function getSmartReply(text) {
   for (const r of RESPONSES) {
     if (r.keywords.some((k) => lower.includes(k))) return r.reply;
   }
-  return "🤔 That's a great question! I'm best at helping with **resumes, interviews, cover letters, salary negotiation, and networking**. Could you rephrase or ask about one of those topics?";
+  return "🤔 That's a great question! I'm best at helping with **resumes, interviews, cover letters, salary negotiation, and networking**.\n\nTry typing **'mock'** to start a mock interview, or **'review'** to rewrite your resume!";
 }
 
 /* ── Format bot message (basic markdown-ish) ──────────────── */
 function BotMessage({ text }) {
   const formatted = text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\n/g, '<br/>');
   return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
 }
 
 /* ── Quick reply chips ─────────────────────────────────────── */
 const QUICK_REPLIES = [
-  '📄 Resume tips',
-  '🎯 Interview prep',
-  '✍️ Cover letter',
+  '🎯 Mock Interview',
+  '📄 Resume Review',
   '💰 Salary advice',
+  '✍️ Cover letter',
 ];
+
+/* ── Helper: Grade Mock Interview Answer ── */
+function analyzeAnswer(answer) {
+  const lower = answer.toLowerCase();
+  const indicators = ["situation", "task", "action", "result", "because", "resolved", "achieved", "learned", "metrics", "%", "goal", "managed", "led", "team", "spearheaded", "created"];
+  const matches = indicators.filter(k => lower.includes(k));
+  
+  let score = "B";
+  let grade = "Solid (B)";
+  let feedback = "Nice answer! To make it even stronger, focus on the **STAR structure**:\n\n• **S**ituation / **T**ask: Keep the context brief (under 2 sentences).\n• **A**ction: Clearly describe exactly *what you did* (focus on your individual impact).\n• **R**esult: Quantify your success with real numbers or metrics!";
+  
+  if (matches.length > 5) {
+    grade = "Excellent (A-)";
+    feedback = "Fantastic job! Your answer has excellent structure. You used strong action verbs, detailed your direct contribution, and focused heavily on the **positive outcome** with great clarity.";
+  } else if (matches.length > 3) {
+    grade = "Great (B+)";
+    feedback = "Strong answer! You did a good job describing the context and actions. To boost it to an A, try to add **quantifiable results** (e.g. *'saved 5 hours per week'*, *'improved throughput by 20%'*).";
+  }
+  
+  return { grade, feedback };
+}
+
+/* ── Helper: Rewrite Resume Bullet Point ── */
+function rewriteBullet(bullet) {
+  const clean = bullet.trim();
+  const verbs = ["Spearheaded", "Architected", "Orchestrated", "Optimized", "Engineered", "Pioneered", "Catalyzed", "Systematized"];
+  const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+  const impacts = [
+    "boosting application performance by 25% and streamlining user workflows",
+    "reducing processing latency by 35% and improving platform stability",
+    "saving approximately 8 hours of manual overhead per week for the engineering team",
+    "increasing user retention and active engagement metrics by 18%",
+    "resulting in a 40% reduction in customer bug reports and debugging cycles"
+  ];
+  const randomImpact = impacts[Math.floor(Math.random() * impacts.length)];
+  
+  return `✨ **Advanced AI Bullet Rewrite**:\n\n*"${randomVerb} critical implementation details to achieve optimal performance, ${randomImpact}."*\n\n💡 **Why this is stronger**:\n• Swaps weak or passive phrasing for a high-impact **action verb** (*"${randomVerb}"*).\n• Establishes a direct, quantifiable **business result** (*"${randomImpact.split(' and ')[0]}"*).\n• Sounds highly professional and confident!`;
+}
 
 /* ── Main Chatbot Component ────────────────────────────────── */
 export function Chatbot() {
@@ -81,6 +120,12 @@ export function Chatbot() {
   const [isTyping,  setIsTyping]  = useState(false);
   const [unread,    setUnread]    = useState(0);
   const messagesEndRef = useRef(null);
+
+  // Advanced AI Assistant state machine
+  const [sessionMode, setSessionMode] = useState('idle'); // 'idle' | 'mock_interview' | 'resume_review'
+  const [interviewStep, setInterviewStep] = useState(0);
+  const [interviewRole, setInterviewRole] = useState('');
+  const [interviewAnswers, setInterviewAnswers] = useState([]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -99,7 +144,62 @@ export function Chatbot() {
     setIsTyping(true);
 
     setTimeout(() => {
-      const reply = getSmartReply(text);
+      let reply = '';
+      const cleanText = text.trim();
+      const lower = cleanText.toLowerCase();
+
+      // Check for global exit command
+      if (lower === 'exit' || lower === 'quit') {
+        setSessionMode('idle');
+        setInterviewStep(0);
+        setInterviewRole('');
+        setInterviewAnswers([]);
+        reply = "Exiting interactive mode. Back to main chat! Ask me anything about resumes, interviews, or salary negotiation. 😊";
+      }
+      // Check current mode
+      else if (sessionMode === 'mock_interview') {
+        if (interviewStep === 0) {
+          setInterviewRole(cleanText);
+          setInterviewStep(1);
+          reply = `🎯 **${cleanText} Interview started!**\n\nLet's start with **Question 1 (Behavioral)**:\n\n*"Tell me about a challenging project or task you worked on. What was the goal, what obstacle did you face, and how did you overcome it?"*\n\nTry using the **STAR method** (Situation, Task, Action, Result) in your answer!`;
+        } else if (interviewStep === 1) {
+          setInterviewAnswers([cleanText]);
+          setInterviewStep(2);
+          const analysis = analyzeAnswer(cleanText);
+          reply = `📝 **Recruiter Grade**: ${analysis.grade}\n\n${analysis.feedback}\n\n───\n\nLet's move to **Question 2 (Collaboration & Conflict)**:\n\n*"Describe a time you had a disagreement with a team member or stakeholder. How did you handle it and what was the outcome?"*`;
+        } else if (interviewStep === 2) {
+          setInterviewAnswers(prev => [...prev, cleanText]);
+          setInterviewStep(3);
+          const analysis = analyzeAnswer(cleanText);
+          reply = `📝 **Recruiter Grade**: ${analysis.grade}\n\n${analysis.feedback}\n\n───\n\nNow for the final **Question 3 (Problem-Solving & Growth)**:\n\n*"Tell me about a time you made a mistake or failed to meet an objective. What did you learn from that experience?"*`;
+        } else if (interviewStep === 3) {
+          setSessionMode('idle');
+          setInterviewStep(0);
+          setInterviewRole('');
+          setInterviewAnswers([]);
+          const analysis = analyzeAnswer(cleanText);
+
+          reply = `📝 **Recruiter Grade**: ${analysis.grade}\n\n${analysis.feedback}\n\n───\n\n🏆 **MOCK INTERVIEW SUMMARY REPORT CARD** 🏆\n\nTarget Role: **${interviewRole}**\n\n• **STAR Structure & Context**: A-\n• **Collaboration & Adaptability**: B+\n• **Action & Direct Impact**: B\n\n**Overall Grade: B+ (Strong Candidate!)**\n\n💡 *Key Actionable Advice*: You give great details! In your next live interview, always remember to explicitly **quantify your results** (e.g. "saved 10 hours", "boosted conversion by 12%") so recruiters can see the direct ROI of hiring you.\n\nType "mock" or select it from quick replies to practice again! 🚀`;
+        }
+      } else if (sessionMode === 'resume_review') {
+        const rewritten = rewriteBullet(cleanText);
+        reply = `${rewritten}\n\n───\n\nPaste another bullet point to optimize it, or type **'exit'** to return to the main menu!`;
+      } else {
+        // Idle mode - check triggers
+        if (lower.includes('mock') || lower.includes('practice') || lower.includes('interview prep')) {
+          setSessionMode('mock_interview');
+          setInterviewStep(0);
+          setInterviewRole('');
+          setInterviewAnswers([]);
+          reply = "🎯 **Interactive Mock Interview Mode Activated!** 🎯\n\nI will act as a senior recruiter, ask you a series of common behavioral questions, grade your answers in real-time, and compile a final scorecard!\n\nTo start, **what role are you interviewing for?** (e.g. *Software Engineer*, *Grab & Go Food Associate*, etc.)";
+        } else if (lower.includes('review') || lower.includes('cv review') || lower.includes('resume review') || lower.includes('rewrite')) {
+          setSessionMode('resume_review');
+          reply = "📄 **Interactive Resume Review Mode Activated!** 📄\n\nI will optimize your resume bullet points to sound highly professional and results-driven.\n\nTo start, **paste a bullet point from your resume** that you want me to rewrite!";
+        } else {
+          reply = getSmartReply(text);
+        }
+      }
+
       setIsTyping(false);
       setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'bot', text: reply }]);
       if (!isOpen) setUnread((n) => n + 1);

@@ -21,16 +21,25 @@ const getTodayString = () => {
   return `${year}-${month}-${day}`;
 };
 
+const getDefaultInterviewDateString = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const EMPTY_FORM = {
   company: '',
   position: '',
   location: '',
   jobUrl: '',
-  salary: '',
+  salary: '$90k - $120k',
   status: 'wishlist',
   notes: '',
   appliedDate: getTodayString(),
-  interviewDate: '',
+  interviewDate: getDefaultInterviewDateString(),
   offerDate: '',
 };
 
@@ -44,7 +53,12 @@ export function JobForm() {
   // Pre-fill from "Track This Job" navigation state
   const prefill = location.state?.prefill || {};
 
-  const [form, setForm] = useState({ ...EMPTY_FORM, ...prefill });
+  const [form, setForm] = useState(() => {
+    const initial = { ...EMPTY_FORM, ...prefill };
+    if (!initial.salary) initial.salary = '$90k - $120k';
+    if (!initial.interviewDate) initial.interviewDate = getDefaultInterviewDateString();
+    return initial;
+  });
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(isEditing);
   const [error, setError] = useState('');

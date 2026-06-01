@@ -16,6 +16,33 @@ const STATUS_BADGES = {
   withdrawn:    { label: 'Withdrawn',     color: '#4b5563', bg: '#f3f4f6', dot: '#4b5563' },
 };
 
+/* ── Task Pool for Daily Goals Rollover ── */
+const TASK_POOL = [
+  "Tailor resume keywords for recently tracked applications",
+  "Connect with 2 recruiters at target companies on LinkedIn",
+  "Review technical prep question tags for scheduled interviews",
+  "Draft a personalized cover letter for your top wishlist role",
+  "Practice explaining a complex technical project using the STAR method",
+  "Search for 3 new open positions on remote job boards",
+  "Follow up on a job application submitted more than 7 days ago",
+  "Update your GitHub profile readme or pin your best repository",
+  "Connect with a former colleague or university alum for a virtual coffee chat",
+  "Review standard system design principles or data structures",
+  "Spend 15 minutes practicing live coding questions",
+  "Research and document company culture notes for your next active interview",
+  "Optimize your professional headline and summary on LinkedIn",
+  "Identify three key skills mentioned in job descriptions and outline a study plan",
+  "Record yourself answering common behavioral questions to check your delivery"
+];
+
+const getRandomTasks = (count, excludeList = []) => {
+  const filtered = TASK_POOL.filter(t => !excludeList.includes(t));
+  const pool = filtered.length >= count ? filtered : TASK_POOL;
+  const shuffled = [...pool].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+};
+
+
 export function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -72,6 +99,20 @@ export function Dashboard() {
   const handleToggleTodo = (id) => {
     const updated = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
     saveTodos(updated);
+
+    // If all tasks are completed, refresh with 3 fresh ones after a short 800ms delay
+    if (updated.length > 0 && updated.every(t => t.completed)) {
+      setTimeout(() => {
+        const currentTexts = updated.map(t => t.text);
+        const nextTasks = getRandomTasks(3, currentTexts);
+        const freshTodos = nextTasks.map((text, idx) => ({
+          id: Date.now() + idx,
+          text,
+          completed: false
+        }));
+        saveTodos(freshTodos);
+      }, 800);
+    }
   };
 
   const handleDeleteTodo = (id) => {
