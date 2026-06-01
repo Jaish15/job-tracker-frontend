@@ -155,6 +155,16 @@ export function Dashboard() {
   const activeCount = jobs.filter(job => !['rejected', 'withdrawn'].includes(job.status)).length;
   const offersCount = stats?.byStatus?.offer || 0;
 
+  const upcomingInterviews = jobs
+    .filter(job => job.interviewDate)
+    .filter(job => {
+      const d = new Date(job.interviewDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return d >= today;
+    })
+    .sort((a, b) => new Date(a.interviewDate) - new Date(b.interviewDate));
+
   /* ── Calendar Helper Logic ── */
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -691,7 +701,7 @@ export function Dashboard() {
               </div>
 
               {/* Profile Metadata rows */}
-              <div className="db-profile-metadata">
+              <div className="db-profile-metadata" style={{ marginBottom: '1rem' }}>
                 <div className="db-profile-meta-row">
                   <span className="db-profile-meta-label">Target Field</span>
                   <span className="db-profile-meta-value">Software Engineering</span>
@@ -706,6 +716,78 @@ export function Dashboard() {
                   <span className="db-profile-meta-label">Total Tracker List</span>
                   <span className="db-profile-meta-value">{jobs.length} Applications</span>
                 </div>
+              </div>
+
+              {/* Upcoming Interviews Section */}
+              <div style={{ marginTop: '1.25rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem', paddingBottom: '1.5rem', textAlign: 'left' }}>
+                <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'flex-start' }}>
+                  📅 Upcoming Interviews
+                </h4>
+                {upcomingInterviews.length === 0 ? (
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontStyle: 'italic', margin: 0, padding: 0 }}>
+                    No interviews scheduled yet. Keep applying! 🌟
+                  </p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    {upcomingInterviews.map((item) => {
+                      const interviewDateObj = new Date(item.interviewDate);
+                      const formattedDate = interviewDateObj.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                      });
+                      return (
+                        <div 
+                          key={item.id} 
+                          style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            padding: '0.5rem 0.75rem',
+                            background: 'linear-gradient(135deg, rgba(92, 95, 192, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
+                            border: '1px solid rgba(92, 95, 192, 0.12)',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onClick={() => navigate(`/jobs/${item.id}/edit`)}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(92, 95, 192, 0.08)';
+                            e.currentTarget.style.borderColor = 'rgba(92, 95, 192, 0.3)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = 'none';
+                            e.currentTarget.style.borderColor = 'rgba(92, 95, 192, 0.12)';
+                          }}
+                        >
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {item.position}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5c5fc0', marginTop: '0.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              🏢 {item.company}
+                            </div>
+                          </div>
+                          <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: '0.4rem' }}>
+                            <span style={{ 
+                              fontSize: '0.7rem', 
+                              fontWeight: 800, 
+                              color: '#ffffff', 
+                              background: '#5c5fc0', 
+                              padding: '0.2rem 0.45rem', 
+                              borderRadius: '6px',
+                              boxShadow: '0 1.5px 4px rgba(92, 95, 192, 0.15)',
+                              whiteSpace: 'nowrap'
+                            }}>
+                              {formattedDate}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 
