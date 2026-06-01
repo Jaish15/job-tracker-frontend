@@ -793,195 +793,77 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* ---- User Profile Card ---- */}
-          <div className="db-profile-card" style={{ padding: '0 0 2rem 0', overflow: 'hidden' }}>
-            
-            {/* Tech Indigo Cover Banner (Yellow Image Removed as Requested) */}
-            <div style={{ 
-              position: 'relative', 
-              height: '120px', 
-              width: '100%', 
-              marginBottom: '2.5rem',
-              background: 'linear-gradient(135deg, #5c5fc0 0%, #4f46e5 100%)',
-              boxShadow: 'inset 0 -15px 30px rgba(0,0,0,0.1)'
-            }}>
-              {/* Invisible File Input */}
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                accept="image/*" 
-                onChange={handleProfilePicChange} 
-                style={{ display: 'none' }} 
-              />
-              
-              {/* Interactive Avatar Circle with Camera Hover Uploader */}
-              <div 
-                className="db-profile-avatar" 
-                onClick={() => fileInputRef.current.click()}
-                style={{ 
-                  position: 'absolute', 
-                  bottom: '-25px', 
-                  left: '50%', 
-                  transform: 'translateX(-50%)',
-                  width: '66px',
-                  height: '66px',
-                  fontSize: '1.3rem',
-                  border: '4px solid #ffffff',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-                title="Click to upload profile picture"
-                onMouseEnter={(e) => {
-                  const overlay = e.currentTarget.querySelector('.avatar-camera-overlay');
-                  if (overlay) overlay.style.opacity = '1';
-                }}
-                onMouseLeave={(e) => {
-                  const overlay = e.currentTarget.querySelector('.avatar-camera-overlay');
-                  if (overlay) overlay.style.opacity = '0';
-                }}
-              >
-                {profilePic ? (
-                  <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  userInitials
-                )}
-                {/* Camera Overlay */}
-                <div 
-                  className="avatar-camera-overlay"
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1rem',
-                    opacity: 0,
-                    transition: 'opacity 0.2s ease',
-                    borderRadius: '50%'
-                  }}
-                >
-                  📷
-                </div>
+          {/* ---- Standalone Upcoming Interviews Card ---- */}
+          <div className="db-card" style={{ padding: '1.25rem 1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '24px', textAlign: 'left' }}>
+            <h2 className="db-card-title" style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'flex-start' }}>
+              📅 Upcoming Interviews
+            </h2>
+            {upcomingInterviews.length === 0 ? (
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontStyle: 'italic', background: 'var(--surface-2)', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px dashed var(--border)' }}>
+                No interviews scheduled yet. Keep applying! 🌟
               </div>
-            </div>
-
-            <div style={{ padding: '0 2rem' }}>
-              {/* User Title Information */}
-              <h3 className="db-profile-name">{user?.firstName} {user?.lastName || ''}</h3>
-              <p className="db-profile-title">
-                {user?.role === 'admin' ? 'Sr. System Administrator' : 'Candidate (Job Seeker)'}
-              </p>
-
-              {/* call/mail/message circular icons */}
-              <div className="db-profile-actions">
-                <a href={`tel:+1234567890`} className="db-profile-action-circle" title="Call User">
-                  📞
-                </a>
-                <a href={`mailto:${user?.email || ''}`} className="db-profile-action-circle" title="Email User">
-                  ✉️
-                </a>
-                <div className="db-profile-action-circle" onClick={() => navigate('/settings')} title="Message User">
-                  💬
-                </div>
-              </div>
-
-              {/* Profile Metadata rows */}
-              <div className="db-profile-metadata" style={{ marginBottom: '1rem' }}>
-                <div className="db-profile-meta-row">
-                  <span className="db-profile-meta-label">Target Field</span>
-                  <span className="db-profile-meta-value">Software Engineering</span>
-                </div>
-                <div className="db-profile-meta-row">
-                  <span className="db-profile-meta-label">Joined Date</span>
-                  <span className="db-profile-meta-value">
-                    {new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
-                  </span>
-                </div>
-                <div className="db-profile-meta-row">
-                  <span className="db-profile-meta-label">Total Tracker List</span>
-                  <span className="db-profile-meta-value">{jobs.length} Applications</span>
-                </div>
-              </div>
-
-              {/* Upcoming Interviews Section */}
-              <div style={{ marginTop: '1.25rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem', paddingBottom: '1.5rem', textAlign: 'left' }}>
-                <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'flex-start' }}>
-                  📅 Upcoming Interviews
-                </h4>
-                {upcomingInterviews.length === 0 ? (
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontStyle: 'italic', margin: 0, padding: 0 }}>
-                    No interviews scheduled yet. Keep applying! 🌟
-                  </p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                    {upcomingInterviews.map((item) => {
-                      const interviewDateObj = new Date(item.interviewDate);
-                      const formattedDate = interviewDateObj.toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                      });
-                      return (
-                        <div 
-                          key={item.id} 
-                          style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'space-between',
-                            padding: '0.5rem 0.75rem',
-                            background: 'linear-gradient(135deg, rgba(92, 95, 192, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
-                            border: '1px solid rgba(92, 95, 192, 0.12)',
-                            borderRadius: '12px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease'
-                          }}
-                          onClick={() => navigate(`/jobs/${item.id}/edit`)}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(92, 95, 192, 0.08)';
-                            e.currentTarget.style.borderColor = 'rgba(92, 95, 192, 0.3)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = 'none';
-                            e.currentTarget.style.borderColor = 'rgba(92, 95, 192, 0.12)';
-                          }}
-                        >
-                          <div style={{ minWidth: 0, flex: 1 }}>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {item.position}
-                            </div>
-                            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5c5fc0', marginTop: '0.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              🏢 {item.company}
-                            </div>
-                          </div>
-                          <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: '0.4rem' }}>
-                            <span style={{ 
-                              fontSize: '0.7rem', 
-                              fontWeight: 800, 
-                              color: '#ffffff', 
-                              background: '#5c5fc0', 
-                              padding: '0.2rem 0.45rem', 
-                              borderRadius: '6px',
-                              boxShadow: '0 1.5px 4px rgba(92, 95, 192, 0.15)',
-                              whiteSpace: 'nowrap'
-                            }}>
-                              {formattedDate}
-                            </span>
-                          </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {upcomingInterviews.map((item) => {
+                  const interviewDateObj = new Date(item.interviewDate);
+                  const formattedDate = interviewDateObj.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  });
+                  return (
+                    <div 
+                      key={item.id} 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
+                        padding: '0.65rem 0.85rem',
+                        background: 'linear-gradient(135deg, rgba(92, 95, 192, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
+                        border: '1px solid rgba(92, 95, 192, 0.12)',
+                        borderRadius: '12px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onClick={() => navigate(`/jobs/${item.id}/edit`)}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 10px rgba(92, 95, 192, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(92, 95, 192, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.borderColor = 'rgba(92, 95, 192, 0.12)';
+                      }}
+                    >
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {item.position}
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5c5fc0', marginTop: '0.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          🏢 {item.company}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: '0.5rem' }}>
+                        <span style={{ 
+                          fontSize: '0.72rem', 
+                          fontWeight: 800, 
+                          color: '#ffffff', 
+                          background: '#5c5fc0', 
+                          padding: '0.25rem 0.5rem', 
+                          borderRadius: '8px',
+                          boxShadow: '0 1.5px 4px rgba(92, 95, 192, 0.15)',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          {formattedDate}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
-
+            )}
           </div>
 
         </div>
