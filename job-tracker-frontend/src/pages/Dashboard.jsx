@@ -50,6 +50,53 @@ export function Dashboard() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /* ── Gamified Daily Streak State ── */
+  const [streak, setStreak] = useState(() => {
+    return parseInt(localStorage.getItem('jobtracker_streak_count') || '1', 10);
+  });
+  
+  useEffect(() => {
+    const getLocalDateString = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    const todayStr = getLocalDateString();
+    const lastLogin = localStorage.getItem('jobtracker_last_login_date');
+    let currentStreak = parseInt(localStorage.getItem('jobtracker_streak_count') || '1', 10);
+
+    if (!lastLogin) {
+      localStorage.setItem('jobtracker_last_login_date', todayStr);
+      localStorage.setItem('jobtracker_streak_count', '1');
+      setStreak(1);
+    } else if (lastLogin !== todayStr) {
+      const lastDate = new Date(lastLogin);
+      const todayDate = new Date(todayStr);
+      const diffTime = Math.abs(todayDate - lastDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        currentStreak += 1;
+      } else if (diffDays > 1) {
+        currentStreak = 1;
+      }
+      localStorage.setItem('jobtracker_last_login_date', todayStr);
+      localStorage.setItem('jobtracker_streak_count', String(currentStreak));
+      setStreak(currentStreak);
+    }
+  }, []);
+
+  const simulateIncrementStreak = () => {
+    const nextStreak = streak + 1;
+    localStorage.setItem('jobtracker_streak_count', String(nextStreak));
+    setStreak(nextStreak);
+  };
+
+  const simulateResetStreak = () => {
+    localStorage.setItem('jobtracker_streak_count', '1');
+    setStreak(1);
+  };
+
   /* ── Profile Picture Uploader ── */
   const [profilePic, setProfilePic] = useState(() => localStorage.getItem('userProfilePic') || null);
   const fileInputRef = useRef(null);
@@ -600,6 +647,150 @@ export function Dashboard() {
 
 
 
+          </div>
+
+          {/* ---- Daily Streak Corner Card ---- */}
+          <div className="db-card" style={{ padding: '1.25rem 1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '24px', position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <h2 className="db-card-title" style={{ fontSize: '0.92rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text)' }}>
+                🔥 Daily Streak Corner
+              </h2>
+              <span style={{ 
+                fontSize: '0.7rem', 
+                fontWeight: 800, 
+                color: '#f97316', 
+                background: 'rgba(249, 115, 22, 0.08)', 
+                border: '1px solid rgba(249, 115, 22, 0.15)',
+                padding: '0.15rem 0.45rem', 
+                borderRadius: '6px' 
+              }}>
+                {streak} Day{streak !== 1 ? 's' : ''} Active
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.85rem 1rem', background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.04) 0%, rgba(239, 68, 68, 0.04) 100%)', border: '1px solid rgba(249, 115, 22, 0.12)', borderRadius: '16px', marginBottom: '1rem' }}>
+              <span style={{ fontSize: '2.2rem', filter: 'drop-shadow(0 2px 6px rgba(249, 115, 22, 0.25))' }}>🔥</span>
+              <div>
+                <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--text)', lineHeight: 1.1 }}>
+                  {streak} Day{streak !== 1 ? 's' : ''} Streak
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', fontWeight: 600, marginTop: '0.2rem' }}>
+                  {streak >= 3 ? "🎯 ATS Resume reward unlocked!" : `Visit ${3 - streak} more day${3 - streak !== 1 ? 's' : ''} to unlock ATS tips!`}
+                </div>
+              </div>
+            </div>
+
+            {/* Streak Progress Track dots */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.3rem', marginBottom: '1.25rem', padding: '0 0.25rem' }}>
+              {[1, 2, 3, 4, 5].map((d) => {
+                const isPassed = streak >= d;
+                const isCurrent = streak === d;
+                return (
+                  <div key={d} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
+                    <div style={{ 
+                      width: '22px', 
+                      height: '22px', 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      fontWeight: 800,
+                      background: isPassed ? '#f97316' : 'var(--surface-2)',
+                      color: isPassed ? '#ffffff' : 'var(--text-3)',
+                      border: isCurrent ? '2px solid #ea580c' : '1px solid var(--border)',
+                      boxShadow: isCurrent ? '0 0 8px rgba(249, 115, 22, 0.35)' : 'none',
+                      transition: 'all 0.3s ease'
+                    }}>
+                      {d === 3 || d === 5 ? "🎁" : d}
+                    </div>
+                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: isPassed ? '#f97316' : 'var(--text-3)' }}>
+                      Day {d}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Rewards section */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', textAlign: 'left' }}>
+              <h3 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-2)', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                🎁 Unlocked Rewards ({streak >= 5 ? '2' : streak >= 3 ? '1' : '0'} Unlocked)
+              </h3>
+              
+              {streak < 3 && (
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', fontStyle: 'italic', background: 'var(--surface-2)', padding: '0.6rem 0.8rem', borderRadius: '12px', border: '1px dashed var(--border)', lineHeight: 1.4 }}>
+                  🔒 No rewards unlocked yet. Reach a **3-Day Streak** to unlock your first ATS-friendly resume blueprint!
+                </div>
+              )}
+
+              {/* Reward 1: 3-Day Streak ATS Secrets */}
+              {streak >= 3 && (
+                <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(5, 150, 105, 0.03) 100%)', border: '1px solid rgba(16, 185, 129, 0.15)', borderRadius: '12px', padding: '0.75rem 1rem', marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 800, color: '#059669', marginBottom: '0.4rem' }}>
+                    <span>🎯</span> ATS Resume Secrets
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-2)', lineHeight: 1.45, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div>• **Single Column format**: Avoid double columns. ATS reads left-to-right across the page.</div>
+                    <div>• **Direct Keyword Matches**: match exact nouns from job posts (e.g. use "React hooks" if listed).</div>
+                    <div>• **Proper File Naming**: Save file as `Firstname_Lastname_Resume.pdf` (never `draft_v3.pdf`).</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Reward 2: 5-Day Streak Salary Scripts */}
+              {streak >= 5 && (
+                <div style={{ background: 'linear-gradient(135deg, rgba(92, 95, 192, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%)', border: '1px solid rgba(92, 95, 192, 0.15)', borderRadius: '12px', padding: '0.75rem 1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 800, color: '#5c5fc0', marginBottom: '0.4rem' }}>
+                    <span>💎</span> Salary Negotiation Script
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-2)', lineHeight: 1.45, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div>• **The Script**: *"I'm thrilled about the offer! Based on the core responsibilities and market averages, I'd like to explore a base salary of [Target + 10%]..."*</div>
+                    <div>• **The Pivot**: Always negotiate. 70% of companies expect you to counter-offer!</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Simulation controls for easy testing/reviewing */}
+            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center', marginTop: '1.25rem', paddingTop: '0.75rem', borderTop: '1px dashed var(--border)' }}>
+              <button 
+                onClick={simulateIncrementStreak} 
+                style={{ 
+                  background: 'var(--surface-2)', 
+                  border: '1px solid var(--border)', 
+                  color: 'var(--text-2)', 
+                  fontSize: '0.65rem', 
+                  fontWeight: 700, 
+                  padding: '0.25rem 0.5rem', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = 'rgba(249, 115, 22, 0.08)'}
+                onMouseLeave={(e) => e.target.style.background = 'var(--surface-2)'}
+              >
+                🚀 Simulate Day +1
+              </button>
+              <button 
+                onClick={simulateResetStreak} 
+                style={{ 
+                  background: 'var(--surface-2)', 
+                  border: '1px solid var(--border)', 
+                  color: 'var(--text-3)', 
+                  fontSize: '0.65rem', 
+                  fontWeight: 700, 
+                  padding: '0.25rem 0.5rem', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.08)'}
+                onMouseLeave={(e) => e.target.style.background = 'var(--surface-2)'}
+              >
+                🔄 Reset
+              </button>
+            </div>
           </div>
 
           {/* ---- User Profile Card ---- */}
