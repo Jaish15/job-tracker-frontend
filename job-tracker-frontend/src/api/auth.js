@@ -1,11 +1,4 @@
-import axios from 'axios';
-import api, { RENDER_API_URL } from './axios';
-
-// Separate axios instance pointing to Render (only for email/reset)
-const renderApi = axios.create({
-  baseURL: RENDER_API_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
+import api from './axios';
 
 export const authApi = {
   // These go to AWS — real auth with real user data
@@ -13,6 +6,6 @@ export const authApi = {
   login:    (data) => api.post('/auth/login', data),
   sendOtp:  (email) => api.post('/auth/send-otp', { email }),
 
-  // This goes to Render — sends the actual password reset email
-  resetPassword: (data) => renderApi.post('/auth/reset-password', data),
+  // Now goes to AWS as well — database-backed stateless reset token
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 };

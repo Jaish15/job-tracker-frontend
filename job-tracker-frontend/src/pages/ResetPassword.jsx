@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { RENDER_API_URL } from '../api/axios';
-
-const renderApi = axios.create({
-  baseURL: RENDER_API_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
+import api from '../api/axios';
 
 export function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -56,7 +50,7 @@ export function ResetPassword() {
     setError('');
 
     try {
-      await renderApi.post('/auth/confirm-reset', { token, newPassword });
+      await api.post('/auth/confirm-reset', { token, newPassword });
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
