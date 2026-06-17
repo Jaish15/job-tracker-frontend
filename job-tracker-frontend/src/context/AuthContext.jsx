@@ -100,21 +100,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const sendOtp = async (email) => {
-    setLoading(true);
-    try {
-      const { data } = await authApi.sendOtp(email);
-      return { success: true, message: data.message };
-    } catch (err) {
-      return {
-        success: false,
-        message: err.response?.data?.message || 'Failed to send verification code',
-      };
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
   const updateUser = (updatedFields) => {
     const updatedUser = { ...user, ...updatedFields };
@@ -132,7 +117,7 @@ export function AuthProvider({ children }) {
   const isRecruiter = () => user?.role === 'recruiter';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, resetPassword, isAdmin, isRecruiter, updateUser, sendOtp }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, resetPassword, isAdmin, isRecruiter, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

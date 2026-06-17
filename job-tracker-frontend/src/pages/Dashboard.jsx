@@ -6,14 +6,14 @@ import '../styles/dashboard.css';
 
 /* ── Status badge color config ─────────────────────────────── */
 const STATUS_BADGES = {
-  wishlist: { label: 'Wishlist', color: '#7c3aed', bg: '#ede9fe', dot: '#7c3aed' },
-  applied: { label: 'Applied', color: '#1d4ed8', bg: '#dbeafe', dot: '#1d4ed8' },
-  phone_screen: { label: 'Phone Screen', color: '#d97706', bg: '#fef3c7', dot: '#d97706' },
-  interview: { label: 'Interview', color: '#0891b2', bg: '#e0f2fe', dot: '#0891b2' },
-  offer: { label: 'Offer', color: '#059669', bg: '#d1fae5', dot: '#059669' },
-  accepted: { label: 'Accepted', color: '#10b981', bg: '#bbf7d0', dot: '#10b981' },
-  rejected: { label: 'Rejected', color: '#dc2626', bg: '#fee2e2', dot: '#dc2626' },
-  withdrawn: { label: 'Withdrawn', color: '#4b5563', bg: '#f3f4f6', dot: '#4b5563' },
+  wishlist:     { label: 'Wishlist',      color: '#7c3aed', bg: '#ede9fe', dot: '#7c3aed' },
+  applied:      { label: 'Applied',       color: '#1d4ed8', bg: '#dbeafe', dot: '#1d4ed8' },
+  phone_screen: { label: 'Phone Screen',  color: '#d97706', bg: '#fef3c7', dot: '#d97706' },
+  interview:    { label: 'Interview',     color: '#0891b2', bg: '#e0f2fe', dot: '#0891b2' },
+  offer:        { label: 'Offer',         color: '#059669', bg: '#d1fae5', dot: '#059669' },
+  accepted:     { label: 'Accepted',      color: '#10b981', bg: '#bbf7d0', dot: '#10b981' },
+  rejected:     { label: 'Rejected',      color: '#dc2626', bg: '#fee2e2', dot: '#dc2626' },
+  withdrawn:    { label: 'Withdrawn',     color: '#4b5563', bg: '#f3f4f6', dot: '#4b5563' },
 };
 
 /* ── Task Pool for Daily Goals Rollover ── */
@@ -50,36 +50,11 @@ export function Dashboard() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* ── Resume Draft Banner Integration ── */
-  const [showResumeBanner, setShowResumeBanner] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      const saved = localStorage.getItem(`resume_draft_${user.id}`);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          const d = parsed.data;
-          const isNotEmpty = d?.firstName || d?.lastName || d?.title || d?.email || d?.summary || d?.skills;
-          if (isNotEmpty) {
-            setShowResumeBanner(true);
-          }
-        } catch (e) {
-          console.error("Dashboard check resume draft error:", e);
-        }
-      }
-    }
-  }, [user]);
-
-  const discardResumeDraft = () => {
-    setShowResumeBanner(false);
-  };
-
   /* ── Gamified Daily Streak State ── */
   const [streak, setStreak] = useState(() => {
     return parseInt(localStorage.getItem('jobtracker_streak_count') || '1', 10);
   });
-
+  
   useEffect(() => {
     const getLocalDateString = () => {
       const d = new Date();
@@ -347,90 +322,10 @@ export function Dashboard() {
   return (
     <div className="dash2-page">
       <div className="db-grid">
-
+        
         {/* ════════════ LEFT COLUMN ════════════ */}
         <div className="db-left-col">
-
-          {/* Resume Draft Notification Banner */}
-          {showResumeBanner && (
-            <div className="resume-draft-banner" style={{
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%)',
-              border: '1.5px solid rgba(99, 102, 241, 0.18)',
-              borderRadius: '24px',
-              padding: '1.5rem 2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1.5rem',
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 8px 32px rgba(99, 102, 241, 0.06)',
-              animation: 'fadeIn 0.4s ease both',
-              flexWrap: 'wrap',
-              textAlign: 'left',
-              marginBottom: '0rem'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flex: '1', minWidth: '280px' }}>
-                <span style={{
-                  fontSize: '2rem',
-                  background: 'rgba(99, 102, 241, 0.1)',
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}>✨</span>
-                <div>
-                  <h4 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: 'var(--text)' }}>
-                    Unfinished Resume Draft Found!
-                  </h4>
-                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-2)', fontWeight: 500, lineHeight: 1.4 }}>
-                    You have an incomplete resume draft saved from your last session. Pick up right where you left off and finish your ATS-friendly resume!
-                  </p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexShrink: 0 }}>
-                <Link to="/resume" style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                  color: '#ffffff',
-                  padding: '0.65rem 1.25rem',
-                  borderRadius: '12px',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
-                  transition: 'all 0.2s ease',
-                  whiteSpace: 'nowrap'
-                }}
-                  onMouseEnter={(e) => e.target.style.transform = 'translateY(-1px)'}
-                  onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-                >
-                  Resume Editing →
-                </Link>
-                <button
-                  onClick={discardResumeDraft}
-                  style={{
-                    background: 'var(--surface-2)',
-                    border: '1.5px solid var(--border)',
-                    color: 'var(--text-3)',
-                    padding: '0.65rem 1.25rem',
-                    borderRadius: '12px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    whiteSpace: 'nowrap'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = 'var(--border)'}
-                  onMouseLeave={(e) => e.target.style.background = 'var(--surface-2)'}
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          )}
-
+          
           {/* ---- Hero Banner Card ---- */}
           <div className="db-hero">
             <div className="db-hero-content">
@@ -438,7 +333,7 @@ export function Dashboard() {
                 <h1 className="db-hero-title">Hello {user?.firstName || 'User'}!</h1>
                 <p className="db-hero-sub">
                   Today you have <strong>{activeCount}</strong> active applications in progress.
-                  {offersCount > 0 && ` You also have ${offersCount} job offer pending review!`}
+                  {offersCount > 0 && ` You also have ${offersCount} job offer pending review!`} 
                   {' '}Keep updating your progress to land your dream role.
                 </p>
                 <Link to="/jobs/new" className="db-hero-btn">
@@ -448,9 +343,9 @@ export function Dashboard() {
 
               {/* Purple Hoodie Illustration replacing the coffee girl */}
               <div className="db-hero-right">
-                <img
-                  src="/purple-hoodie.jpg"
-                  alt="Developer working on laptop illustration"
+                <img 
+                  src="/purple-hoodie.jpg" 
+                  alt="Developer working on laptop illustration" 
                   className="hero-vector-svg"
                   style={{
                     maxWidth: '180px',
@@ -521,7 +416,7 @@ export function Dashboard() {
                           <td style={{ textAlign: 'right' }}>
                             <span className="db-row-actions" onClick={() => navigate(`/jobs/${job.id}/edit`)}>
                               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
+                                <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
                               </svg>
                             </span>
                           </td>
@@ -543,13 +438,13 @@ export function Dashboard() {
                   Keep your job-hunting tasks fully organized
                 </div>
               </div>
-              <span style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: '#5c5fc0',
-                background: '#eef2ff',
-                padding: '0.2rem 0.6rem',
-                borderRadius: '6px'
+              <span style={{ 
+                fontSize: '0.75rem', 
+                fontWeight: 700, 
+                color: '#5c5fc0', 
+                background: '#eef2ff', 
+                padding: '0.2rem 0.6rem', 
+                borderRadius: '6px' 
               }}>
                 {todos.filter(t => t.completed).length} / {todos.length} Done
               </span>
@@ -557,12 +452,12 @@ export function Dashboard() {
 
             {/* Todo Input Form */}
             <form onSubmit={handleAddTodo} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <input
-                type="text"
+              <input 
+                type="text" 
                 placeholder="Add a new task (e.g. Follow up with recruiting team)..."
                 value={newTodoText}
                 onChange={(e) => setNewTodoText(e.target.value)}
-                style={{
+                style={{ 
                   flex: 1,
                   padding: '0.5rem 1rem',
                   border: '1.5px solid var(--border)',
@@ -576,9 +471,9 @@ export function Dashboard() {
                 onFocus={(e) => e.target.style.borderColor = '#5c5fc0'}
                 onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
               />
-              <button
-                type="submit"
-                style={{
+              <button 
+                type="submit" 
+                style={{ 
                   background: '#5c5fc0',
                   color: '#ffffff',
                   padding: '0.5rem 1.25rem',
@@ -602,11 +497,11 @@ export function Dashboard() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {todos.map(todo => (
-                  <div
-                    key={todo.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
+                  <div 
+                    key={todo.id} 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
                       justifyContent: 'space-between',
                       padding: '0.75rem 1rem',
                       background: todo.completed ? 'rgba(92, 95, 192, 0.03)' : 'var(--surface-2)',
@@ -616,21 +511,21 @@ export function Dashboard() {
                     }}
                   >
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', flex: 1, minWidth: 0 }}>
-                      <input
-                        type="checkbox"
+                      <input 
+                        type="checkbox" 
                         checked={todo.completed}
                         onChange={() => handleToggleTodo(todo.id)}
-                        style={{
-                          width: '18px',
-                          height: '18px',
-                          borderRadius: '6px',
-                          border: '1.5px solid var(--border)',
+                        style={{ 
+                          width: '18px', 
+                          height: '18px', 
+                          borderRadius: '6px', 
+                          border: '1.5px solid var(--border)', 
                           accentColor: '#5c5fc0',
-                          cursor: 'pointer'
+                          cursor: 'pointer' 
                         }}
                       />
-                      <span style={{
-                        fontSize: '0.85rem',
+                      <span style={{ 
+                        fontSize: '0.85rem', 
                         color: todo.completed ? 'var(--text-3)' : 'var(--text-2)',
                         textDecoration: todo.completed ? 'line-through' : 'none',
                         fontWeight: todo.completed ? 500 : 600,
@@ -644,10 +539,10 @@ export function Dashboard() {
                         {todo.text}
                       </span>
                     </label>
-                    <button
+                    <button 
                       type="button"
                       onClick={() => handleDeleteTodo(todo.id)}
-                      style={{
+                      style={{ 
                         color: 'var(--text-3)',
                         fontSize: '1rem',
                         cursor: 'pointer',
@@ -671,10 +566,10 @@ export function Dashboard() {
 
         {/* ════════════ RIGHT COLUMN ════════════ */}
         <div className="db-right-col">
-
+          
           {/* ---- Mini Calendar Component ---- */}
           <div className="db-calendar-card">
-
+            
             {/* Header: Title + Slider Arrows */}
             <div className="db-calendar-header">
               <span className="db-calendar-month-title">
@@ -708,17 +603,17 @@ export function Dashboard() {
               {Array.from({ length: firstDayIndex }).map((_, idx) => (
                 <div key={`empty-${idx}`} className="db-calendar-day-cell empty"></div>
               ))}
-
+              
               {/* Day numbers */}
               {Array.from({ length: daysInMonth }).map((_, idx) => {
                 const dayNum = idx + 1;
                 const cellDate = new Date(year, month, dayNum);
-                const isSelected =
+                const isSelected = 
                   selectedDate.getDate() === dayNum &&
                   selectedDate.getMonth() === month &&
                   selectedDate.getFullYear() === year;
-
-                const isToday =
+                  
+                const isToday = 
                   new Date().getDate() === dayNum &&
                   new Date().getMonth() === month &&
                   new Date().getFullYear() === year;
@@ -736,7 +631,7 @@ export function Dashboard() {
                     onClick={() => setSelectedDate(cellDate)}
                   >
                     {dayNum}
-
+                    
                     {/* Event markers dots */}
                     {dayEvents.length > 0 && (
                       <div className="db-calendar-dots">
@@ -760,14 +655,14 @@ export function Dashboard() {
               <h2 className="db-card-title" style={{ fontSize: '0.92rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text)' }}>
                 🔥 Daily Streak Corner
               </h2>
-              <span style={{
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                color: '#f97316',
-                background: 'rgba(249, 115, 22, 0.08)',
+              <span style={{ 
+                fontSize: '0.7rem', 
+                fontWeight: 800, 
+                color: '#f97316', 
+                background: 'rgba(249, 115, 22, 0.08)', 
                 border: '1px solid rgba(249, 115, 22, 0.15)',
-                padding: '0.15rem 0.45rem',
-                borderRadius: '6px'
+                padding: '0.15rem 0.45rem', 
+                borderRadius: '6px' 
               }}>
                 {streak} Day{streak !== 1 ? 's' : ''} Active
               </span>
@@ -792,14 +687,14 @@ export function Dashboard() {
                 const isCurrent = streak === d;
                 return (
                   <div key={d} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
-                    <div style={{
-                      width: '22px',
-                      height: '22px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.7rem',
+                    <div style={{ 
+                      width: '22px', 
+                      height: '22px', 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
                       fontWeight: 800,
                       background: isPassed ? '#f97316' : 'var(--surface-2)',
                       color: isPassed ? '#ffffff' : 'var(--text-3)',
@@ -822,7 +717,7 @@ export function Dashboard() {
               <h3 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-2)', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 🎁 Unlocked Rewards ({streak >= 5 ? '2' : streak >= 3 ? '1' : '0'} Unlocked)
               </h3>
-
+              
               {streak < 3 && (
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', fontStyle: 'italic', background: 'var(--surface-2)', padding: '0.6rem 0.8rem', borderRadius: '12px', border: '1px dashed var(--border)', lineHeight: 1.4 }}>
                   🔒 No rewards unlocked yet. Reach a **3-Day Streak** to unlock your first ATS-friendly resume blueprint!
@@ -859,16 +754,16 @@ export function Dashboard() {
 
             {/* Simulation controls for easy testing/reviewing */}
             <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center', marginTop: '1.25rem', paddingTop: '0.75rem', borderTop: '1px dashed var(--border)' }}>
-              <button
-                onClick={simulateIncrementStreak}
-                style={{
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-2)',
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '6px',
+              <button 
+                onClick={simulateIncrementStreak} 
+                style={{ 
+                  background: 'var(--surface-2)', 
+                  border: '1px solid var(--border)', 
+                  color: 'var(--text-2)', 
+                  fontSize: '0.65rem', 
+                  fontWeight: 700, 
+                  padding: '0.25rem 0.5rem', 
+                  borderRadius: '6px', 
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
                 }}
@@ -877,16 +772,16 @@ export function Dashboard() {
               >
                 🚀 Simulate Day +1
               </button>
-              <button
-                onClick={simulateResetStreak}
-                style={{
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-3)',
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '6px',
+              <button 
+                onClick={simulateResetStreak} 
+                style={{ 
+                  background: 'var(--surface-2)', 
+                  border: '1px solid var(--border)', 
+                  color: 'var(--text-3)', 
+                  fontSize: '0.65rem', 
+                  fontWeight: 700, 
+                  padding: '0.25rem 0.5rem', 
+                  borderRadius: '6px', 
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
                 }}
@@ -917,11 +812,11 @@ export function Dashboard() {
                     year: 'numeric'
                   });
                   return (
-                    <div
-                      key={item.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
+                    <div 
+                      key={item.id} 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
                         justifyContent: 'space-between',
                         padding: '0.65rem 0.85rem',
                         background: 'linear-gradient(135deg, rgba(92, 95, 192, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
@@ -951,12 +846,12 @@ export function Dashboard() {
                         </div>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: '0.5rem' }}>
-                        <span style={{
-                          fontSize: '0.72rem',
-                          fontWeight: 800,
-                          color: '#ffffff',
-                          background: '#5c5fc0',
-                          padding: '0.25rem 0.5rem',
+                        <span style={{ 
+                          fontSize: '0.72rem', 
+                          fontWeight: 800, 
+                          color: '#ffffff', 
+                          background: '#5c5fc0', 
+                          padding: '0.25rem 0.5rem', 
                           borderRadius: '8px',
                           boxShadow: '0 1.5px 4px rgba(92, 95, 192, 0.15)',
                           whiteSpace: 'nowrap'

@@ -17,9 +17,6 @@ import { ResumePage } from './pages/ResumePage';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
 import { Settings } from './pages/Settings';
-import { AiJobSearch } from './pages/AiJobSearch';
-import { OauthSimulator } from './pages/OauthSimulator';
-import { LeetCodePrep } from './pages/LeetCodePrep';
 
 function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -47,7 +44,6 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/oauth-simulator" element={<OauthSimulator />} />
 
 
           {/* Protected */}
@@ -59,8 +55,6 @@ function App() {
             <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />
             <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
             <Route path="/resume" element={<AppLayout><ResumePage /></AppLayout>} />
-            <Route path="/ai-search" element={<AppLayout><AiJobSearch /></AppLayout>} />
-            <Route path="/leetcode-prep" element={<AppLayout><LeetCodePrep /></AppLayout>} />
           </Route>
 
           {/* Admin */}

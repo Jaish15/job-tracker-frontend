@@ -11,7 +11,6 @@ export const authApi = {
   // These go to AWS — real auth with real user data
   register: (data) => api.post('/auth/register', data),
   login:    (data) => api.post('/auth/login', data),
-  sendOtp:  (email) => api.post('/auth/send-otp', { email }),
 
   // This goes to Render — sends the actual password reset email
   resetPassword: (data) => renderApi.post('/auth/reset-password', data),
