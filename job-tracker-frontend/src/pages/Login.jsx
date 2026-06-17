@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../api/axios';
 
 export function Login() {
   const { login, loading } = useAuth();
@@ -93,14 +94,15 @@ export function Login() {
             <div className="si-social-divider">or continue with</div>
 
             <div className="si-social-row">
-              <button type="button" onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`} className="si-social-btn" aria-label="Google">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
+              <button type="button" onClick={() => window.location.href = `${API_BASE_URL}/auth/google`} className="si-social-btn" aria-label="Google" style={{ transition: 'transform 0.2s' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.859-3.578-7.859-8s3.53-8 7.86-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c6.478 0 10.793-4.537 10.793-10.978 0-.74-.08-1.3-.176-1.852H12.24z"/>
+                </svg>
               </button>
-              <button type="button" onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/apple`} className="si-social-btn" aria-label="Apple">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.42 1.34c-1.12.06-2.6.74-3.4 1.54-.7.7-1.3 1.94-1.16 3.08 1.25.1 2.64-.62 3.42-1.4.75-.76 1.35-1.97 1.14-3.22zM17.06 6.8c-1.3-.08-2.6.76-3.36.76-.74 0-1.84-.7-2.94-.68-1.42.02-2.76.82-3.48 2.08-1.5 2.58-.38 6.38 1.08 8.48.72 1.04 1.56 2.18 2.72 2.14 1.1-.04 1.54-.72 2.88-.72 1.34 0 1.74.72 2.9.7 1.2-.02 1.92-1.04 2.62-2.08.82-1.18 1.16-2.32 1.18-2.38-.02-.02-2.22-.86-2.26-3.4-.04-2.12 1.74-3.14 1.8-3.18-1-1.46-2.56-1.64-3.14-1.72z"/></svg>
-              </button>
-              <button type="button" onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/facebook`} className="si-social-btn" aria-label="Facebook">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.04c-5.5 0-10 4.48-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.5 1.48-3.89 3.77-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.54-4.5-10.02-10-10.02z"/></svg>
+              <button type="button" onClick={() => window.location.href = `${API_BASE_URL}/auth/github`} className="si-social-btn" aria-label="GitHub" style={{ transition: 'transform 0.2s' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.164 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                </svg>
               </button>
             </div>
 

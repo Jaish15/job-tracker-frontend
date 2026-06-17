@@ -1,0 +1,809 @@
+/* =========================================
+   Classy & Professional Profile — Styles
+   ========================================= */
+
+.profile-page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+  animation: fadeIn 0.4s ease both;
+}
+
+/* ── Banner Header ── */
+.profile-banner-container {
+  position: relative;
+  margin-bottom: 4.5rem;
+}
+
+.profile-cover-banner {
+  height: 240px;
+  background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 50%, #fdf4ff 100%);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.04);
+  border: 1.5px solid #e0e7ff;
+}
+
+.banner-overlay-shape1 {
+  position: absolute;
+  top: -60px;
+  right: 8%;
+  width: 240px;
+  height: 240px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  filter: blur(20px);
+}
+
+.banner-overlay-shape2 {
+  position: absolute;
+  bottom: -90px;
+  left: 15%;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  filter: blur(10px);
+}
+
+.cover-edit-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(99, 102, 241, 0.15);
+  color: #4f46e5;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.05);
+}
+.cover-edit-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+}
+
+/* Avatar details block */
+.profile-avatar-row {
+  position: absolute;
+  bottom: -36px;
+  left: 3rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.75rem;
+  text-align: left;
+}
+
+.avatar-circle-wrapper {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.profile-avatar-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 4.5px solid #ffffff;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #6366f1;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.profile-avatar-circle:hover {
+  transform: scale(1.02);
+}
+
+.avatar-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.profile-avatar-circle:hover .avatar-hover-overlay {
+  opacity: 1;
+}
+
+.profile-avatar-status-dot {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  background: #10b981;
+  border-radius: 50%;
+  border: 3.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+.profile-header-info {
+  padding-bottom: 0.65rem;
+}
+
+.profile-header-name {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+}
+
+.profile-header-headline {
+  color: #1e293b;
+  font-size: 0.95rem;
+  margin: 0.25rem 0 0 0;
+  font-weight: 700;
+}
+
+.profile-header-joined {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #4f46e5;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Grid splits */
+.profile-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.profile-card {
+  background: #ffffff;
+  border: 1.5px solid #ede9fe;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.015);
+  text-align: left;
+}
+
+.profile-card-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 1.5rem 0;
+  border-bottom: 1.5px solid #f3f4f6;
+  padding-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Interactive contribution habit tracker ── */
+.habit-tracker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.habit-tracker-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.habit-dot-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.65rem;
+  background: #fafafc;
+  border: 1.5px solid #f3f4f6;
+  border-radius: 18px;
+  padding: 1.25rem;
+}
+
+.habit-day-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.habit-dot-cell {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  position: relative;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.habit-dot-cell.empty-day {
+  border: 1.5px dashed #e5e7eb;
+  background: transparent;
+}
+
+.habit-dot-cell.active-login {
+  background: linear-gradient(135deg, #ede9fe 0%, #d8b4fe 100%);
+  border: 1.5px solid #c084fc;
+  box-shadow: 0 2px 6px rgba(192, 132, 252, 0.25);
+}
+
+.habit-dot-cell.active-login::before {
+  content: '✦';
+  font-size: 0.72rem;
+  color: #7c3aed;
+  font-weight: 800;
+}
+
+.habit-dot-cell.missed-login {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  font-size: 0.85rem;
+}
+
+.habit-dot-cell.future-day {
+  background: #f9fafb;
+  border: 1.5px solid #f3f4f6;
+}
+
+.habit-day-number {
+  position: absolute;
+  top: -12px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: #9ca3af;
+}
+
+/* ── Profile Strength Widgets ── */
+.strength-metric-card {
+  background: #ffffff;
+}
+
+.strength-percent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.strength-percent-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #374151;
+}
+
+.strength-percent-num {
+  font-size: 0.98rem;
+  font-weight: 900;
+  color: #10b981;
+}
+
+.strength-progress-bg {
+  height: 9px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  border: 1px solid #f3f4f6;
+}
+
+.strength-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.strength-checklist-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.strength-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #4b5563;
+  line-height: 1.4;
+  animation: slideIn 0.2s ease both;
+}
+
+/* ── Streak Congratulations Card ── */
+.streak-congrats-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%);
+  border: 1.5px solid rgba(99, 102, 241, 0.15) !important;
+}
+
+.congrats-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #4f46e5;
+  margin-bottom: 0.85rem;
+}
+
+.congrats-tip-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.congrats-tip-item {
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #374151;
+  text-align: left;
+}
+
+.congrats-tip-title {
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.2rem;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive splits */
+@media (max-width: 900px) {
+  .profile-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .profile-banner-container {
+    margin-bottom: 6rem;
+  }
+  .profile-avatar-row {
+    flex-direction: column;
+    align-items: center;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -60px;
+    text-align: center;
+  }
+}
+
+/* ── GitHub-Style Contributions Chart ── */
+.github-chart-card {
+  background: #0d1117 !important; /* Dark GitHub-like theme card! */
+  color: #c9d1d9 !important;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid #30363d !important;
+  margin-top: 1rem;
+  overflow: hidden;
+  text-align: left;
+}
+
+.github-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.github-chart-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f0f6fc;
+}
+
+.github-chart-subtitle {
+  color: #8b949e;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.github-chart-subtitle:hover {
+  color: #58a6ff;
+}
+
+.github-scroll-wrapper {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.github-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.github-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 99px;
+}
+
+.github-chart-weekdays {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 1.5rem; /* space for month labels row */
+  padding-bottom: 0.25rem;
+  font-size: 0.7rem;
+  color: #8b949e;
+  font-weight: 600;
+  width: 28px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.github-chart-weekdays div {
+  height: 15px;
+  line-height: 15px;
+}
+
+.github-chart-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.github-months-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 15px;
+  gap: 4px;
+  height: 1.25rem;
+  font-size: 0.7rem;
+  color: #8b949e;
+  position: relative;
+  text-align: left;
+}
+
+.github-month-label {
+  grid-column-start: span 4;
+  white-space: nowrap;
+}
+
+.github-columns-wrapper {
+  display: flex;
+  gap: 4px;
+}
+
+.github-week-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.github-day-cell {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  position: relative;
+  transition: all 0.2s ease;
+  background: #161b22; /* Empty GitHub square background */
+  border: 1px solid rgba(240, 246, 252, 0.05);
+}
+
+.github-day-cell.active-login {
+  background: #39d353; /* GitHub Neon Green! */
+  box-shadow: 0 0 8px rgba(57, 211, 83, 0.4);
+  border: none;
+}
+
+.github-day-cell.active-login-med {
+  background: #26a641 !important; /* Medium GitHub green */
+  border: none;
+}
+
+.github-day-cell.missed-login {
+  background: #21262d;
+  color: #8b949e;
+  font-size: 0.65rem;
+}
+
+.github-day-cell.future-day {
+  opacity: 0.15;
+}
+
+/* Legend metadata */
+.github-chart-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.72rem;
+  color: #8b949e;
+  border-top: 1px solid #30363d;
+  padding-top: 0.85rem;
+}
+
+.github-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.github-legend-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+/* =========================================
+   Glassmorphic Explanation Modal Overlay
+   ========================================= */
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.profile-modal {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 28px;
+  padding: 2.5rem;
+  width: 92%;
+  max-width: 440px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.1);
+  text-align: center;
+  color: #c9d1d9;
+  position: relative;
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.profile-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.profile-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #f0f6fc;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.profile-modal-desc {
+  font-size: 0.88rem;
+  color: #8b949e;
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+.profile-modal-actions {
+  display: flex;
+  justify-content: center;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   Interactive Skills Tag Inventory
+   ========================================= */
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.skill-tag {
+  background: #f5f3ff;
+  border: 1.5px solid #ede9fe;
+  color: #6366f1;
+  padding: 0.4rem 0.85rem;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.02);
+}
+
+.skill-tag:hover {
+  transform: translateY(-1.5px);
+  background: #ede9fe;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.08);
+}
+
+.skill-tag-remove {
+  background: none;
+  border: none;
+  color: #a78bfa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.1rem;
+  transition: color 0.15s ease;
+  line-height: 1;
+}
+
+.skill-tag-remove:hover {
+  color: #f43f5e;
+}
+
+.add-skill-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  border-top: 1.5px solid #f3f4f6;
+  padding-top: 1rem;
+}
+
+.add-skill-input {
+  flex: 1;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  border: 1.5px solid #ede9fe;
+  outline: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #111827;
+  background: #fff;
+  transition: all 0.15s ease;
+}
+
+.add-skill-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+.add-skill-btn {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+}
+
+.add-skill-btn:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+/* =========================================
+   Career Analytics & Dynamic Profile Strength
+   ========================================= */
+.analytics-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat-badge-item {
+  background: #fafafc;
+  border: 1.5px solid #f3f4f6;
+  padding: 0.85rem;
+  border-radius: 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.stat-badge-item:hover {
+  transform: translateY(-2px);
+  border-color: #ede9fe;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.03);
+}
+
+.stat-badge-val {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1.1;
+  margin-bottom: 0.15rem;
+}
+
+.stat-badge-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.strength-radial-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(52, 211, 153, 0.03) 100%);
+  border: 1.5px dashed rgba(16, 185, 129, 0.2);
+  padding: 1.1rem;
+  border-radius: 18px;
+  margin-top: 1rem;
+}
+
+.strength-radial-text {
+  flex: 1;
+  text-align: left;
+}
+
+.strength-radial-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #065f46;
+  margin-bottom: 0.15rem;
+}
+
+.strength-radial-tip {
+  font-size: 0.72rem;
+  color: #047857;
+  font-weight: 600;
+  line-height: 1.35;
+}
